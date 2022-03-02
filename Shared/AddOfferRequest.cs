@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -73,7 +72,7 @@ namespace BlazorApp.Shared
             RuleFor(x => x.Transport.IsOffered)
                 .Must(isOffered => isOffered)
                 .When(x => !x.Housing.IsOffered)
-                .WithMessage("Oferta trebuie să includă transport sau cazare sau ambele!");
+                .WithMessage("Oferta trebuie să includă transport, cazare sau ambele!");
 
             RuleFor(x => x.Transport.StartingPoint)
                 .NotEmpty()
@@ -108,7 +107,7 @@ namespace BlazorApp.Shared
             RuleFor(x => x.Housing.IsOffered)
                 .Must(isOffered => isOffered)
                 .When(x => !x.Transport.IsOffered)
-                .WithMessage("Oferta trebuie să includă transport sau cazare sau ambele!");
+                .WithMessage("Oferta trebuie să includă transport, cazare sau ambele!");
 
             RuleFor(x => x.Housing.City)
                 .NotEmpty()
