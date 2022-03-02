@@ -3,6 +3,7 @@
 @using BlazorApp.Shared
 
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
 <PageTitle>Adaugă ofertă ajutor</PageTitle>
@@ -187,7 +188,11 @@
 
         if (form.IsValid)
         {
+            await Http.PostAsJsonAsync("/api/AddOffer", request);
+
             Snackbar.Add("Oferta a fost salvată!", Severity.Info);
+
+            NavigationManager.NavigateTo("/");
         }
     }
 }
