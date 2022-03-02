@@ -139,12 +139,12 @@ namespace BlazorApp.Shared
 
             RuleFor(x => x.Shelter.Address.Region)
                 .NotEmpty()
-                .When(x => x.Shelter.IsOffered)
+                .When(x => x.Shelter.IsOffered && !x.Transport.IsOffered)
                 .WithMessage("Județul este necesar!");
 
             RuleFor(x => x.Shelter.Address.City)
                 .NotEmpty()
-                .When(x => x.Shelter.IsOffered)
+                .When(x => x.Shelter.IsOffered && !x.Transport.IsOffered)
                 .WithMessage("Orașul este necesar!");
 
             RuleFor(x => x.Shelter.Period)

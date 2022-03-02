@@ -42,12 +42,14 @@
             <MudSwitch @bind-Checked="@request.Shelter.IsOffered" For="@(() => request.Shelter.IsOffered)"
                        Label="Adăpost" Color="Color.Primary" />
             <div hidden="@(!request.Shelter.IsOffered)">
-                <MudAutocomplete @bind-Value="request.Shelter.Address.Region" T="RegionModel" For="@(() => request.Shelter.Address.Region)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
-                                 Label="Județ" />
-                <MudAutocomplete @bind-Value="request.Shelter.Address.City" T="CityModel" For="@(() => request.Shelter.Address.City)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" ToStringFunc=@(x => x.Name)
-                                 Label="Oraș" Disabled=@(request.Shelter.Address.Region.Id == 0) />
+                <div hidden="@(request.Transport.IsOffered)">
+                    <MudAutocomplete @bind-Value="request.Shelter.Address.Region" T="RegionModel" For="@(() => request.Shelter.Address.Region)"
+                                     ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
+                                     Label="Județ" />
+                    <MudAutocomplete @bind-Value="request.Shelter.Address.City" T="CityModel" For="@(() => request.Shelter.Address.City)"
+                                     ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" ToStringFunc=@(x => x.Name)
+                                     Label="Oraș" Disabled=@(request.Shelter.Address.Region.Id == 0) />
+                </div>
                 <MudSelect @bind-Value="request.Shelter.Period" For="@(() => request.Shelter.Period)"
                            Label="Perioadă" Class="mt-2">
                     @foreach (var timePeriod in timePeriods)

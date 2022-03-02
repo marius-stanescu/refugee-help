@@ -55,8 +55,12 @@ namespace BlazorApp.Api.Functions
                     },
                     Address = new Address
                     {
-                        RegionId = request.Shelter.Address.Region.Id,
-                        CityId = request.Shelter.Address.City.Id,
+                        RegionId = request.Transport.IsOffered
+                            ? request.Transport.Destination.Region.Id
+                            : request.Shelter.Address.Region.Id,
+                        CityId = request.Transport.IsOffered
+                            ? request.Transport.Destination.City.Id
+                            : request.Shelter.Address.City.Id,
                     },
                     AdultCapacity = request.Shelter.AdultCapacity,
                     ChildrenCapacity = request.Shelter.ChildrenCapacity,
