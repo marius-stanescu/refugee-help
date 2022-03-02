@@ -22,8 +22,9 @@
                 <MudAutocomplete @bind-Value="request.Transport.Destination.Region" T="RegionModel" For="@(() => request.Transport.Destination.Region)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
                                  Label="Destinație (județ)" />
-                <MudAutocomplete @bind-Value="request.Transport.Destination.City" For="@(() => request.Transport.Destination.City)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchTransportCity" Label="Destinație (oraș)" />
+                <MudAutocomplete @bind-Value="request.Transport.Destination.City" T="CityModel" For="@(() => request.Transport.Destination.City)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchTransportCity" ToStringFunc=@(x => x.Name)
+                                 Label="Destinație (oraș)" Disabled=@(request.Transport.Destination.Region.Id == 0) />
                 <MudNumericField @bind-Value="request.Transport.AdultSeats" For="@(() => request.Transport.AdultSeats)"
                                  Label="Nr. locuri adulți" Min="1" Max="100" Class="mt-4" />
                 <MudNumericField @bind-Value="@request.Transport.ChildSeats" For="@(() => request.Transport.ChildSeats)"
@@ -42,8 +43,9 @@
                 <MudAutocomplete @bind-Value="request.Shelter.Address.Region" T="RegionModel" For="@(() => request.Shelter.Address.Region)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
                                  Label="Județ" />
-                <MudAutocomplete @bind-Value="request.Shelter.Address.City" For="@(() => request.Shelter.Address.City)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" Label="Oraș" />
+                <MudAutocomplete @bind-Value="request.Shelter.Address.City" T="CityModel" For="@(() => request.Shelter.Address.City)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" ToStringFunc=@(x => x.Name)
+                                 Label="Oraș" Disabled=@(request.Shelter.Address.Region.Id == 0) />
                 <MudSelect @bind-Value="request.Shelter.Period" For="@(() => request.Shelter.Period)"
                            Label="Perioadă" Class="mt-2">
                     @foreach (var housingPeriod in housingPeriods)
@@ -150,53 +152,33 @@
         }
     }
 
-    private async Task<IEnumerable<string>> SearchTransportCity(string value)
+    private async Task<IEnumerable<CityModel>> SearchTransportCity(string value)
     {
         try
         {
-            var cities = await Http.GetFromJsonAsync<IEnumerable<(string nume, string simplu)>>($"https://roloca.coldfuse.io/orase/{request.Transport.Destination.Region}")
-                ?? new List<(string, string)> { };
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return cities.Select(c => c.nume);
-            }
-
-            value = value.Replace("ă", "a").Replace("î", "i").Replace("â", "a").Replace("ș", "s").Replace("ț", "t");
-
-            return cities
-                .Where(c => c.simplu.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .Select(c => c.nume);
+            var regionId = request.Transport.Destination.Region.Id;
+            return await Http.GetFromJsonAsync<IEnumerable<CityModel>>($"/api/GetCities?regionId={regionId}&name={value}")
+                ?? new CityModel[] { };
         }
         catch (Exception)
         {
             Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
-            return new string[] { };
+            return new CityModel[] { };
         }
     }
 
-    private async Task<IEnumerable<string>> SearchShelterCity(string value)
+    private async Task<IEnumerable<CityModel>> SearchShelterCity(string value)
     {
         try
         {
-            var cities = await Http.GetFromJsonAsync<IEnumerable<(string nume, string simplu)>>($"https://roloca.coldfuse.io/orase/{request.Shelter.Address.Region}")
-                ?? new List<(string, string)> { };
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return cities.Select(c => c.nume);
-            }
-
-            value = value.Replace("ă", "a").Replace("î", "i").Replace("â", "a").Replace("ș", "s").Replace("ț", "t");
-
-            return cities
-                .Where(c => c.simplu.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .Select(c => c.nume);
+            var regionId = request.Shelter.Address.Region.Id;
+            return await Http.GetFromJsonAsync<IEnumerable<CityModel>>($"/api/GetCities?regionId={regionId}&name={value}")
+                ?? new CityModel[] { };
         }
         catch (Exception)
         {
             Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
-            return new string[] { };
+            return new CityModel[] { };
         }
     }
 
