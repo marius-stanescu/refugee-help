@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace BlazorApp.Api.Functions;
 
-public static class StartingPointsFunction
+public static class GetStartingPointsFunction
 {
-    [FunctionName("StartingPoints")]
+    [FunctionName("GetStartingPoints")]
     public static IActionResult Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
     {

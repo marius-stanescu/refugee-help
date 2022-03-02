@@ -103,7 +103,7 @@
     {
         try
         {
-            housingPeriods = await Http.GetFromJsonAsync<HashSet<(HousingPeriod period, string text)>>("/api/HousingPeriods")
+            housingPeriods = await Http.GetFromJsonAsync<HashSet<(HousingPeriod period, string text)>>("/api/GetHousingPeriods")
                 ?? new HashSet<(HousingPeriod, string)> { };
         }
         catch (Exception)
@@ -116,7 +116,7 @@
     {
         try
         {
-            var startingPoints = await Http.GetFromJsonAsync<string[]>("/api/StartingPoints") ?? new string[] { };
+            var startingPoints = await Http.GetFromJsonAsync<string[]>("/api/GetStartingPoints") ?? new string[] { };
 
             if (string.IsNullOrEmpty(value))
             {

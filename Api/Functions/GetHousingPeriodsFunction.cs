@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace BlazorApp.Api.Functions;
 
-public static class HousingPeriodsFunction
+public static class GetHousingPeriodsFunction
 {
-    [FunctionName("HousingPeriods")]
+    [FunctionName("GetHousingPeriods")]
     public static IActionResult Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
     {
