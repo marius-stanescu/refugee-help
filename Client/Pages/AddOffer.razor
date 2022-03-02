@@ -84,9 +84,13 @@
 @code {
     [Inject] ISnackbar Snackbar { get; set; }
 
-    private bool success;
+    public AddOffer(ISnackbar snackbar)
+    {
+        Snackbar = snackbar;
+    }
+
     private string[] errors = { };
-    private MudForm form;
+    private MudForm form = new MudForm();
 
     private AddOfferRequest request = new AddOfferRequest();
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();

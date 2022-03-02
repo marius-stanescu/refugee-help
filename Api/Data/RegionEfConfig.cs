@@ -2,13 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlazorApp.Api.Data
+namespace BlazorApp.Api.Data;
+
+public class RegionEfConfig : IEntityTypeConfiguration<Region>
 {
-    public class RegionEfConfig : IEntityTypeConfiguration<Region>
+    public void Configure(EntityTypeBuilder<Region> builder)
     {
-        public void Configure(EntityTypeBuilder<Region> builder)
-        {
-            builder.HasKey(x => x.Id);
-        }
+        builder.HasKey(x => x.Id);
     }
 }
