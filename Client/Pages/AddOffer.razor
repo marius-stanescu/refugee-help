@@ -1,5 +1,8 @@
 @page "/add-offer"
+
 @using BlazorApp.Shared
+
+@inject HttpClient Http
 
 <PageTitle>Adaugă ofertă ajutor</PageTitle>
 
@@ -16,14 +19,14 @@
             <div hidden="@(!request.Transport.IsOffered)">
                 <MudSelect @bind-Value="request.Transport.StartingPoint" For="@(() => request.Transport.StartingPoint)"
                            Label="Loc de plecare">
-                    @foreach (var startingPoint in StartingPoints)
+                    @foreach (var startingPoint in startingPoints)
                     {
                         <MudSelectItem T="string" Value="@startingPoint">@startingPoint</MudSelectItem>
                     }
                 </MudSelect>
                 <MudSelect @bind-Value="request.Transport.Destination" For="@(() => request.Transport.Destination)"
                            Label="Destinație">
-                    @foreach (var city in Citites)
+                    @foreach (var city in cities)
                     {
                         <MudSelectItem T="string" Value="@city">@city</MudSelectItem>
                     }
@@ -45,7 +48,7 @@
             <div hidden="@(!request.Housing.IsOffered)">
                 <MudSelect @bind-Value="request.Housing.City" For="@(() => request.Housing.City)"
                            Label="Oraș">
-                    @foreach (var city in Citites)
+                    @foreach (var city in cities)
                     {
                         <MudSelectItem T="string" Value="@city">@city</MudSelectItem>
                     }
@@ -95,27 +98,44 @@
     private bool success;
     private string[] errors = { };
     private MudForm form;
-    private string[] StartingPoints =
-                                                {
-        "Oriunde", "Vama Sighet", "Vama Siret", "Cluj-Napoca", "București", "Oradea",
-    };
-    private string[] Citites =
-                                                {
-        "Oriunde", "Cluj-Napoca", "București", "Oradea",
-    };
-    private IEnumerable<(HousingPeriod period, string text)> housingPeriods
-        = new HashSet<(HousingPeriod, string)>
-                {
-            (HousingPeriod.OneToThreeDays, "1 - 3 zile"),
-            (HousingPeriod.ThreeDaysToAWeek, "3 - 7 zile"),
-            (HousingPeriod.OneToTwoWeeks, "1 - 2 săptămâni"),
-            (HousingPeriod.ThreeToFourWeeks, "3 - 4 săptămâni"),
-            (HousingPeriod.OneToTwoMonths, "1 - 2 luni"),
-            (HousingPeriod.Indefinite, "nedeterminat"),
-                };
+    
+    private AddOfferRequest request = new AddOfferRequest();
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
-    public AddOfferRequest request = new AddOfferRequest();
+    private string[] startingPoints = new string[] { };
+    private string[] cities = new string[] { };
+    private IEnumerable<(HousingPeriod period, string text)> housingPeriods = new HashSet<(HousingPeriod, string)> { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            startingPoints = await Http.GetFromJsonAsync<string[]>("/api/StartingPoints") ?? new string[] { };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Locurile de plecare nu au putut fi încărcate!", Severity.Error);
+        }
+
+        try
+        {
+            cities = await Http.GetFromJsonAsync<string[]>("/api/Cities") ?? new string[] { };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Destinațiile nu au putut fi încărcate!", Severity.Error);
+        }
+
+        try
+        {
+            housingPeriods = await Http.GetFromJsonAsync<HashSet<(HousingPeriod period, string text)>>("/api/HousingPeriods")
+                ?? new HashSet<(HousingPeriod, string)> { };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Perioadele de cazare au putut fi încărcate!", Severity.Error);
+        }
+    }
 
     private async Task Submit()
     {
