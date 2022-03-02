@@ -1,8 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<nav class="navbar navbar-light bg-light justify-content-between fixed-top">
-    <a class="navbar-brand">Ajutor refugiați</a>
-</nav>
-<main class="container">
-    @Body
-</main>
+<MudThemeProvider Theme="Ukraine" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Elevation="0" Fixed="true">
+        Ajutor refugiați
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code{
+    MudTheme Ukraine = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.Blue.Darken4,
+            Secondary = Colors.Yellow.Darken1,
+            AppbarBackground = Colors.Blue.Darken4,
+        },
+    };
+}
