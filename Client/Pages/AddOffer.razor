@@ -19,8 +19,9 @@
             <div hidden="@(!request.Transport.IsOffered)">
                 <MudAutocomplete @bind-Value="request.Transport.StartingPoint" For="@(() => request.Transport.StartingPoint)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint" Label="Loc de plecare" />
-                <MudAutocomplete @bind-Value="request.Transport.Destination.Region" For="@(() => request.Transport.Destination.Region)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" Label="Destinație (județ)" />
+                <MudAutocomplete @bind-Value="request.Transport.Destination.Region" T="RegionModel" For="@(() => request.Transport.Destination.Region)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
+                                 Label="Destinație (județ)" />
                 <MudAutocomplete @bind-Value="request.Transport.Destination.City" For="@(() => request.Transport.Destination.City)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchTransportCity" Label="Destinație (oraș)" />
                 <MudNumericField @bind-Value="request.Transport.AdultSeats" For="@(() => request.Transport.AdultSeats)"
@@ -38,8 +39,9 @@
             <MudSwitch @bind-Checked="@request.Shelter.IsOffered" For="@(() => request.Shelter.IsOffered)"
                        Label="Adăpost" Color="Color.Primary" />
             <div hidden="@(!request.Shelter.IsOffered)">
-                <MudAutocomplete @bind-Value="request.Shelter.Address.Region" For="@(() => request.Shelter.Address.Region)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" Label="Județ" />
+                <MudAutocomplete @bind-Value="request.Shelter.Address.Region" T="RegionModel" For="@(() => request.Shelter.Address.Region)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
+                                 Label="Județ" />
                 <MudAutocomplete @bind-Value="request.Shelter.Address.City" For="@(() => request.Shelter.Address.City)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" Label="Oraș" />
                 <MudSelect @bind-Value="request.Shelter.Period" For="@(() => request.Shelter.Period)"
@@ -82,12 +84,8 @@
 </MudPaper>
 
 @code {
-    [Inject] ISnackbar Snackbar { get; set; }
-
-    public AddOffer(ISnackbar snackbar)
-    {
-        Snackbar = snackbar;
-    }
+    [Inject]
+    private ISnackbar Snackbar { get; set; }
 
     private string[] errors = { };
     private MudForm form = new MudForm();
@@ -132,26 +130,23 @@
         }
     }
 
-    private async Task<IEnumerable<string>> SearchRegion(string value)
+    private async Task<IEnumerable<RegionModel>> SearchRegion(string value)
     {
         try
         {
-            var regions = await Http.GetFromJsonAsync<IEnumerable<(string auto, string nume)>>("https://roloca.coldfuse.io/judete")
-                ?? new List<(string auto, string nume)> { };
+            var regions = await Http.GetFromJsonAsync<IEnumerable<RegionModel>>("/api/GetRegions") ?? new RegionModel[] { };
 
             if (string.IsNullOrEmpty(value))
             {
-                return regions.Select(r => r.nume);
+                return regions;
             }
 
-            return regions
-                .Where(r => r.nume.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .Select(r => r.nume);
+            return regions.Where(r => r.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
         catch (Exception)
         {
             Snackbar.Add("Județele nu au putut fi încărcate!", Severity.Error);
-            return new string[] { };
+            return new RegionModel[] { };
         }
     }
 

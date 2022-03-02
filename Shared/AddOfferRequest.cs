@@ -66,7 +66,7 @@ namespace BlazorApp.Shared
 
         public class AddressModel
         {
-            public string Region { get; set; }
+            public RegionModel Region { get; set; }
 
             public string City { get; set; }
         }

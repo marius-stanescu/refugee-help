@@ -8,8 +8,7 @@ public class CityEfConfig : IEntityTypeConfiguration<City>
 {
     public void Configure(EntityTypeBuilder<City> builder)
     {
-        builder.Property<int>("Id");
-        builder.HasKey("Id");
+        builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Region)
             .WithMany(y => y.Cities)
