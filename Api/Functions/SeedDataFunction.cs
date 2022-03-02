@@ -22,7 +22,7 @@ public class SeedDataFunction
 
     [FunctionName("SeedDataFunction")]
     public void Run(
-        [TimerTrigger("0 * * * * *", RunOnStartup = true)] TimerInfo timer,
+        [TimerTrigger("0 0 0 1 1 *", RunOnStartup = true)] TimerInfo timer,
         ILogger log,
         ExecutionContext context)
     {
