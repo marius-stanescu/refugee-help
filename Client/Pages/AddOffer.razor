@@ -3,6 +3,7 @@
 @using BlazorApp.Shared
 
 @inject HttpClient Http
+@inject ISnackbar Snackbar
 
 <PageTitle>Adaugă ofertă ajutor</PageTitle>
 
@@ -48,10 +49,10 @@
                                  Label="Oraș" Disabled=@(request.Shelter.Address.Region.Id == 0) />
                 <MudSelect @bind-Value="request.Shelter.Period" For="@(() => request.Shelter.Period)"
                            Label="Perioadă" Class="mt-2">
-                    @foreach (var housingPeriod in housingPeriods)
+                    @foreach (var timePeriod in timePeriods)
                     {
-                        <MudSelectItem T="HousingPeriod" Value="@housingPeriod.period">
-                            @housingPeriod.text
+                        <MudSelectItem Value="@timePeriod.Period">
+                            @timePeriod.Text
                         </MudSelectItem>
                     }
                 </MudSelect>
@@ -86,8 +87,6 @@
 </MudPaper>
 
 @code {
-    [Inject]
-    private ISnackbar Snackbar { get; set; }
 
     private string[] errors = { };
     private MudForm form = new MudForm();
@@ -97,14 +96,14 @@
 
     private string[] startingPoints = new string[] { };
     private string[] cities = new string[] { };
-    private IEnumerable<(HousingPeriod period, string text)> housingPeriods = new HashSet<(HousingPeriod, string)> { };
+    private IEnumerable<TimePeriodModel> timePeriods = new HashSet<TimePeriodModel> { };
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            housingPeriods = await Http.GetFromJsonAsync<HashSet<(HousingPeriod period, string text)>>("/api/GetHousingPeriods")
-                ?? new HashSet<(HousingPeriod, string)> { };
+            timePeriods = await Http.GetFromJsonAsync<HashSet<TimePeriodModel>>("/api/GetTimePeriods")
+                ?? new HashSet<TimePeriodModel> { };
         }
         catch (Exception)
         {

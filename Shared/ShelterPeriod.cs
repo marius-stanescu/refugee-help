@@ -1,6 +1,6 @@
 ﻿namespace BlazorApp.Shared
 {
-    public enum HousingPeriod
+    public enum TimePeriod
     {
         OneToThreeDays = 10, // 1 - 3 days
         ThreeDaysToAWeek = 20, // 3 days - 1 week

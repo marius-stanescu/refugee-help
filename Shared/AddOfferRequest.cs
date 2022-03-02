@@ -61,7 +61,7 @@ namespace BlazorApp.Shared
 
             public bool AllowsPets { get; set; }
 
-            public HousingPeriod Period { get; set; }
+            public TimePeriod Period { get; set; }
         }
 
         public class AddressModel
