@@ -1,84 +1,118 @@
-﻿@page "/add-offer"
+@page "/add-offer"
 @using BlazorApp.Shared
 
 <PageTitle>Adaugă ofertă ajutor</PageTitle>
 
 <MudPaper Class="mt-5 pa-4">
     <h3>Adaugă ofertă ajutor</h3>
-    <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-        <MudTextField @bind-Value="request.Name" T="string" Label="Nume" Class="mt-4"
-                      Required="true" RequiredError="Numele este necesar!" />
-        <MudTextField @bind-Value="request.Phone" T="string" Label="Telefon" Class="mt-4"
-                      Required="true" RequiredError="Telefonul este necesar!" />
+    <MudForm Model="@request" @ref="@form" @bind-Errors="@errors"
+             Validation="@(offerValidator.ValidateValue)" ValidationDelay="0">
+        <MudTextField @bind-Value="request.Name" For="@(() => request.Name)" Label="Nume" Class="mt-4" />
+        <MudTextField @bind-Value="request.Phone" For="@(() => request.Phone)" Label="Telefon" Class="mt-4" />
 
         <div class="mt-6">
-            <MudSwitch @bind-Checked="@request.Transport.IsOffered" Label="Transport" Color="Color.Primary" />
+            <MudSwitch @bind-Checked="@request.Transport.IsOffered" For="@(() => request.Transport.IsOffered)"
+                       Label="Transport" Color="Color.Primary" />
             <div hidden="@(!request.Transport.IsOffered)">
-                <MudSelect @bind-SelectedValues="request.Transport.Cities" T="string" Label="Destinație" MultiSelection="true"
-                           Required="@request.Transport.IsOffered" RequiredError="Destinația este necesară!">
+                <MudSelect @bind-Value="request.Transport.City" For="@(() => request.Transport.City)"
+                           Label="Destinație">
                     @foreach (var city in Citites)
                     {
                         <MudSelectItem T="string" Value="@city">@city</MudSelectItem>
                     }
                 </MudSelect>
-                <MudNumericField @bind-Value="request.Transport.AdultCapacity" Label="Nr. locuri adulți" Min="1" Max="100" Class="mt-4"
-                                 Required="@request.Transport.IsOffered" RequiredError="Nr. de locuri pentru adulți este necesar!" />
-                <MudNumericField @bind-Value="@request.Transport.CarSeatCapacity" Label="Nr. scaune copil" Min="0" Max="100" Class="mt-4"
-                                 Required="@request.Transport.IsOffered" RequiredError="Nr. de scaune pentru copii este necesar!" />
-                <MudDatePicker @bind-Date="request.Transport.ExpiryDate" Label="Data plecării" DateFormat="dd.MM.yyyy" Class="mt-4"
-                               Required="@request.Transport.IsOffered" RequiredError="Data plecării este necesară!" />
-                <MudTimePicker @bind-Time="request.Transport.ExpiryTime" Label="Ora plecării" Class="mt-4"
-                               Required="@request.Transport.IsOffered" RequiredError="Ora plecării necesară!" />
+                <MudNumericField @bind-Value="request.Transport.AdultSeats" For="@(() => request.Transport.AdultSeats)"
+                                 Label="Nr. locuri adulți" Min="1" Max="100" Class="mt-4" />
+                <MudNumericField @bind-Value="@request.Transport.ChildSeats" For="@(() => request.Transport.ChildSeats)"
+                                 Label="Nr. scaune copil" Min="0" Max="100" Class="mt-4" />
+                <MudDatePicker @bind-Date="request.Transport.ExpiryDate" For="@(() => request.Transport.ExpiryDate)"
+                               Label="Data plecării" DateFormat="dd.MM.yyyy" Class="mt-4" />
+                <MudTimePicker @bind-Time="request.Transport.ExpiryTime" For="@(() => request.Transport.ExpiryTime)"
+                               Label="Ora plecării" Class="mt-4" />
             </div>
         </div>
 
         <div class="mt-6">
-            <MudSwitch @bind-Checked="@request.Housing.IsOffered" Label="Cazare" Color="Color.Primary" />
+            <MudSwitch @bind-Checked="@request.Housing.IsOffered" For="@(() => request.Housing.IsOffered)"
+                       Label="Cazare" Color="Color.Primary" />
             <div hidden="@(!request.Housing.IsOffered)">
-                <MudSelect @bind-value="request.Housing.City" T="string" Label="Oraș"
-                           Required="@request.Housing.IsOffered" RequiredError="Orașul este necesar!">
+                <MudSelect @bind-Value="request.Housing.City" For="@(() => request.Housing.City)"
+                           Label="Oraș">
                     @foreach (var city in Citites)
                     {
                         <MudSelectItem T="string" Value="@city">@city</MudSelectItem>
                     }
                 </MudSelect>
-                <MudSelect @bind-value="request.Housing.Period" T="HousingPeriod" Label="Perioadă" Class="mt-2"
-                           Required="@request.Housing.IsOffered" RequiredError="Perioada este necesară!">
-                    @foreach (var period in housingPeriods)
+                <MudSelect @bind-Value="request.Housing.Period" For="@(() => request.Housing.Period)"
+                           Label="Perioadă" Class="mt-2">
+                    @foreach (var housingPeriod in housingPeriods)
                     {
-                        <MudSelectItem T="HousingPeriod" Value="@period">@period.ToString()</MudSelectItem>
+                        <MudSelectItem T="HousingPeriod" Value="@housingPeriod.period">
+                            @housingPeriod.text
+                        </MudSelectItem>
                     }
                 </MudSelect>
-                <MudNumericField @bind-Value="request.Housing.AdultCapacity" Label="Nr. adulți" Min="0" Max="1000" Class="mt-4"
-                                 Required="@request.Housing.IsOffered" RequiredError="Nr. de adulți este necesar!" />
-                <MudNumericField @bind-Value="request.Housing.ChildrenCapacity" Label="Nr. copii" Min="0" Max="1000" Class="mt-4"
-                                 Required="@request.Housing.IsOffered" RequiredError="Nr. de copii este necesar!" />
-                <MudSwitch @bind-Checked="@request.Housing.AllowsPets" Label="Animale domestice" Color="Color.Success" Class="mt-4" />
+                <MudNumericField @bind-Value="request.Housing.AdultCapacity" For="@(() => request.Housing.AdultCapacity)"
+                                 Label="Nr. adulți" Min="0" Max="1000" Class="mt-4" />
+                <MudNumericField @bind-Value="request.Housing.ChildrenCapacity" For="@(() => request.Housing.ChildrenCapacity)"
+                                 Label="Nr. copii" Min="0" Max="1000" Class="mt-4" />
+                <MudSwitch @bind-Checked="@request.Housing.AllowsPets" For="@(() => request.Housing.AllowsPets)"
+                           Label="Animale domestice" Color="Color.Success" Class="mt-4" />
             </div>
         </div>
 
-        <div class="d-flex align-center justify-space-between mt-6">
-            <MudButton Link="/" Variant="Variant.Outlined" Color="Color.Dark"
-                       StartIcon="@Icons.Filled.ArrowBackIosNew" Class="mx-2">
-                Înapoi
-            </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true"
-                       OnClick="@(()=>form.Validate())" Disabled="@(!success)">
-                Salvează
-            </MudButton>
+        <div class="mt-10">
+            <div class="mb-6">
+                @foreach (var error in errors)
+                {
+                    <MudText Color="@Color.Error">@error</MudText>
+                }
+            </div>
+            <div class="d-flex align-center justify-space-between">
+                <MudButton Link="/" Variant="Variant.Outlined" Color="Color.Dark"
+                           StartIcon="@Icons.Filled.ArrowBackIosNew" Class="mx-2">
+                    Înapoi
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true"
+                           OnClick="@(async () => await Submit())">
+                    Salvează
+                </MudButton>
+            </div>
         </div>
     </MudForm>
 </MudPaper>
 
 @code {
+    [Inject] ISnackbar Snackbar { get; set; }
+
     private bool success;
     private string[] errors = { };
     private MudForm form;
     private string[] Citites =
-        {
+                                                {
         "Oriunde", "Cluj-Napoca", "București", "Oradea",
     };
-    private HousingPeriod[] housingPeriods = (HousingPeriod[])Enum.GetValues(typeof(HousingPeriod));
+    private IEnumerable<(HousingPeriod period, string text)> housingPeriods
+        = new HashSet<(HousingPeriod, string)>
+                {
+            (HousingPeriod.OneToThreeDays, "1 - 3 zile"),
+            (HousingPeriod.ThreeDaysToAWeek, "3 - 7 zile"),
+            (HousingPeriod.OneToTwoWeeks, "1 - 2 săptămâni"),
+            (HousingPeriod.ThreeToFourWeeks, "3 - 4 săptămâni"),
+            (HousingPeriod.OneToTwoMonths, "1 - 2 luni"),
+            (HousingPeriod.Indefinite, "nedeterminat"),
+                };
+    private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
     public AddOfferRequest request = new AddOfferRequest();
+
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            Snackbar.Add("Oferta a fost salvată!", Severity.Info);
+        }
+    }
 }
