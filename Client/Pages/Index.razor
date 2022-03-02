@@ -1,9 +1,26 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject NavigationManager NavigationManager
 
-<h1>Hello, world!</h1>
+<PageTitle>Ajutor refugiați</PageTitle>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="">
+    <div class="d-flex justify-center pa-5">
+        <MudButton Link="help" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">
+            Ajută un refugiat
+        </MudButton>
+    </div>
+    <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+    <div class="d-flex justify-center pa-3">
+        <MudButton Link="add-offer" Variant="Variant.Filled" StartIcon="@Icons.Filled.Add"
+                    Color="Color.Secondary" Size="Size.Small" Style="text-transform:none">
+            Adaugă ofertă
+        </MudButton>
+    </div>
+    <div class="d-flex justify-center pa-3">
+        <MudButton Link="add-offer" Variant="Variant.Filled" StartIcon="@Icons.Filled.ListAlt"
+                    Color="Color.Secondary" Size="Size.Small" Style="text-transform:none">
+            Vezi oferte
+        </MudButton>
+    </div>
+</div>
