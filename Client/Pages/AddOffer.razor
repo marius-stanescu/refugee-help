@@ -17,20 +17,12 @@
             <MudSwitch @bind-Checked="@request.Transport.IsOffered" For="@(() => request.Transport.IsOffered)"
                        Label="Transport" Color="Color.Primary" />
             <div hidden="@(!request.Transport.IsOffered)">
-                <MudSelect @bind-Value="request.Transport.StartingPoint" For="@(() => request.Transport.StartingPoint)"
-                           Label="Loc de plecare">
-                    @foreach (var startingPoint in startingPoints)
-                    {
-                        <MudSelectItem T="string" Value="@startingPoint">@startingPoint</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudSelect @bind-Value="request.Transport.Destination" For="@(() => request.Transport.Destination)"
-                           Label="Destinație">
-                    @foreach (var city in cities)
-                    {
-                        <MudSelectItem T="string" Value="@city">@city</MudSelectItem>
-                    }
-                </MudSelect>
+                <MudAutocomplete @bind-Value="request.Transport.StartingPoint" For="@(() => request.Transport.StartingPoint)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint" Label="Loc de plecare" />
+                <MudAutocomplete @bind-Value="request.Transport.Destination.Region" For="@(() => request.Transport.Destination.Region)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" Label="Destinație (județ)" />
+                <MudAutocomplete @bind-Value="request.Transport.Destination.City" For="@(() => request.Transport.Destination.City)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchTransportCity" Label="Destinație (oraș)" />
                 <MudNumericField @bind-Value="request.Transport.AdultSeats" For="@(() => request.Transport.AdultSeats)"
                                  Label="Nr. locuri adulți" Min="1" Max="100" Class="mt-4" />
                 <MudNumericField @bind-Value="@request.Transport.ChildSeats" For="@(() => request.Transport.ChildSeats)"
@@ -43,17 +35,14 @@
         </div>
 
         <div class="mt-6">
-            <MudSwitch @bind-Checked="@request.Housing.IsOffered" For="@(() => request.Housing.IsOffered)"
-                       Label="Cazare" Color="Color.Primary" />
-            <div hidden="@(!request.Housing.IsOffered)">
-                <MudSelect @bind-Value="request.Housing.City" For="@(() => request.Housing.City)"
-                           Label="Oraș">
-                    @foreach (var city in cities)
-                    {
-                        <MudSelectItem T="string" Value="@city">@city</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudSelect @bind-Value="request.Housing.Period" For="@(() => request.Housing.Period)"
+            <MudSwitch @bind-Checked="@request.Shelter.IsOffered" For="@(() => request.Shelter.IsOffered)"
+                       Label="Adăpost" Color="Color.Primary" />
+            <div hidden="@(!request.Shelter.IsOffered)">
+                <MudAutocomplete @bind-Value="request.Shelter.Address.Region" For="@(() => request.Shelter.Address.Region)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" Label="Județ" />
+                <MudAutocomplete @bind-Value="request.Shelter.Address.City" For="@(() => request.Shelter.Address.City)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" Label="Oraș" />
+                <MudSelect @bind-Value="request.Shelter.Period" For="@(() => request.Shelter.Period)"
                            Label="Perioadă" Class="mt-2">
                     @foreach (var housingPeriod in housingPeriods)
                     {
@@ -62,11 +51,11 @@
                         </MudSelectItem>
                     }
                 </MudSelect>
-                <MudNumericField @bind-Value="request.Housing.AdultCapacity" For="@(() => request.Housing.AdultCapacity)"
+                <MudNumericField @bind-Value="request.Shelter.AdultCapacity" For="@(() => request.Shelter.AdultCapacity)"
                                  Label="Nr. adulți" Min="0" Max="1000" Class="mt-4" />
-                <MudNumericField @bind-Value="request.Housing.ChildrenCapacity" For="@(() => request.Housing.ChildrenCapacity)"
+                <MudNumericField @bind-Value="request.Shelter.ChildrenCapacity" For="@(() => request.Shelter.ChildrenCapacity)"
                                  Label="Nr. copii" Min="0" Max="1000" Class="mt-4" />
-                <MudSwitch @bind-Checked="@request.Housing.AllowsPets" For="@(() => request.Housing.AllowsPets)"
+                <MudSwitch @bind-Checked="@request.Shelter.AllowsPets" For="@(() => request.Shelter.AllowsPets)"
                            Label="Animale domestice" Color="Color.Success" Class="mt-4" />
             </div>
         </div>
@@ -98,7 +87,7 @@
     private bool success;
     private string[] errors = { };
     private MudForm form;
-    
+
     private AddOfferRequest request = new AddOfferRequest();
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
@@ -110,30 +99,105 @@
     {
         try
         {
-            startingPoints = await Http.GetFromJsonAsync<string[]>("/api/StartingPoints") ?? new string[] { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Locurile de plecare nu au putut fi încărcate!", Severity.Error);
-        }
-
-        try
-        {
-            cities = await Http.GetFromJsonAsync<string[]>("/api/Cities") ?? new string[] { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Destinațiile nu au putut fi încărcate!", Severity.Error);
-        }
-
-        try
-        {
             housingPeriods = await Http.GetFromJsonAsync<HashSet<(HousingPeriod period, string text)>>("/api/HousingPeriods")
                 ?? new HashSet<(HousingPeriod, string)> { };
         }
         catch (Exception)
         {
             Snackbar.Add("Perioadele de cazare au putut fi încărcate!", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchStartingPoint(string value)
+    {
+        try
+        {
+            var startingPoints = await Http.GetFromJsonAsync<string[]>("/api/StartingPoints") ?? new string[] { };
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return startingPoints;
+            }
+
+            return startingPoints.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Locurile de plecare nu au putut fi încărcate!", Severity.Error);
+            return new string[] { };
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchRegion(string value)
+    {
+        try
+        {
+            var regions = await Http.GetFromJsonAsync<IEnumerable<(string auto, string nume)>>("https://roloca.coldfuse.io/judete")
+                ?? new List<(string auto, string nume)> { };
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return regions.Select(r => r.nume);
+            }
+
+            return regions
+                .Where(r => r.nume.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(r => r.nume);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Județele nu au putut fi încărcate!", Severity.Error);
+            return new string[] { };
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchTransportCity(string value)
+    {
+        try
+        {
+            var cities = await Http.GetFromJsonAsync<IEnumerable<(string nume, string simplu)>>($"https://roloca.coldfuse.io/orase/{request.Transport.Destination.Region}")
+                ?? new List<(string, string)> { };
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return cities.Select(c => c.nume);
+            }
+
+            value = value.Replace("ă", "a").Replace("î", "i").Replace("â", "a").Replace("ș", "s").Replace("ț", "t");
+
+            return cities
+                .Where(c => c.simplu.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(c => c.nume);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
+            return new string[] { };
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchShelterCity(string value)
+    {
+        try
+        {
+            var cities = await Http.GetFromJsonAsync<IEnumerable<(string nume, string simplu)>>($"https://roloca.coldfuse.io/orase/{request.Shelter.Address.Region}")
+                ?? new List<(string, string)> { };
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return cities.Select(c => c.nume);
+            }
+
+            value = value.Replace("ă", "a").Replace("î", "i").Replace("â", "a").Replace("ș", "s").Replace("ț", "t");
+
+            return cities
+                .Where(c => c.simplu.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(c => c.nume);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
+            return new string[] { };
         }
     }
 
