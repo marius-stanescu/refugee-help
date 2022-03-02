@@ -14,7 +14,14 @@
             <MudSwitch @bind-Checked="@request.Transport.IsOffered" For="@(() => request.Transport.IsOffered)"
                        Label="Transport" Color="Color.Primary" />
             <div hidden="@(!request.Transport.IsOffered)">
-                <MudSelect @bind-Value="request.Transport.City" For="@(() => request.Transport.City)"
+                <MudSelect @bind-Value="request.Transport.StartingPoint" For="@(() => request.Transport.StartingPoint)"
+                           Label="Loc de plecare">
+                    @foreach (var startingPoint in StartingPoints)
+                    {
+                        <MudSelectItem T="string" Value="@startingPoint">@startingPoint</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect @bind-Value="request.Transport.Destination" For="@(() => request.Transport.Destination)"
                            Label="Destinație">
                     @foreach (var city in Citites)
                     {
@@ -88,6 +95,10 @@
     private bool success;
     private string[] errors = { };
     private MudForm form;
+    private string[] StartingPoints =
+                                                {
+        "Oriunde", "Vama Sighet", "Vama Siret", "Cluj-Napoca", "București", "Oradea",
+    };
     private string[] Citites =
                                                 {
         "Oriunde", "Cluj-Napoca", "București", "Oradea",

@@ -27,7 +27,9 @@ namespace BlazorApp.Shared
         {
             public bool IsOffered { get; set; }
 
-            public string City { get; set; }
+            public string StartingPoint { get; set; }
+
+            public string Destination { get; set; }
 
             public int AdultSeats { get; set; }
 
@@ -73,7 +75,12 @@ namespace BlazorApp.Shared
                 .When(x => !x.Housing.IsOffered)
                 .WithMessage("Oferta trebuie să includă transport sau cazare sau ambele!");
 
-            RuleFor(x => x.Transport.City)
+            RuleFor(x => x.Transport.StartingPoint)
+                .NotEmpty()
+                .When(x => x.Transport.IsOffered)
+                .WithMessage("Locul de plecare este necesar!");
+
+            RuleFor(x => x.Transport.Destination)
                 .NotEmpty()
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Destinația este necesară!");
