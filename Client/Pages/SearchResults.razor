@@ -1,4 +1,4 @@
-﻿@page "/search-results"
+@page "/search-results"
 
 @using BlazorApp.Shared
 
@@ -25,7 +25,7 @@
                         <div>
                             <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline-block pb-1" />
                             <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
-                                Adresa: @transport.Destination.City.Name, @transport.Destination.Region.Name
+                                Destinație: @transport.Destination.City.Name, @transport.Destination.Region.Name
                             </MudText>
                         </div>
                         <div class="mt-2">
@@ -78,67 +78,70 @@
                 </MudText>
             </div>
         </MudTabPanel>
-        <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home" Disabled="@(!Result.SearchedForShelter)">
-            @foreach (var shelter in Result.ShelterResults)
-            {
-                <MudCard Class="mb-6 pl-2 pb-2 pr-2">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h5">@shelter.Name</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudToggleIconButton @bind-Toggled="@shelter.DisplayPhone"
+        @if (Result.SearchedForShelter)
+        {
+            <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home">
+                @foreach (var shelter in Result.ShelterResults)
+                {
+                    <MudCard Class="mb-6 pl-2 pb-2 pr-2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5">@shelter.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudToggleIconButton @bind-Toggled="@shelter.DisplayPhone"
                                              Icon="@Icons.Filled.Call" Color="Color.Primary" Size="Size.Large"
                                              ToggledIcon="@Icons.Filled.Call" ToggledColor="@Color.Error" ToggledSize="Size.Large" />
-                            <MudPopover Open="@shelter.DisplayPhone" Fixed="true" Elevation="0" Class="pa-4">
-                                <MudText Typo="Typo.h5" Color="Color.Primary">@shelter.Phone</MudText>
-                            </MudPopover>
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <div>
-                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline-block pb-1" />
-                            <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
-                                Adresa: @shelter.Address.City.Name, @shelter.Address.Region.Name
-                            </MudText>
-                        </div>
-                        <div class="mt-2">
-                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline-block pb-1" />
-                            <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
-                                Număr persoane: adulți - @shelter.AdultCapacity, copii - @shelter.ChildrenCapacity
-                            </MudText>
-                        </div>
-                        <div class="mt-2">
-                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Class="d-inline-block pb-1" />
-                            <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
-                                Perioadă: @shelter.Period.Text()
-                            </MudText>
-                        </div>
-                    </MudCardContent>
-                    <MudCardActions Class="d-flex justify-space-between">
-                        <div>
-                            <MudButton Variant="Variant.Filled" Color="Color.Success"
+                                <MudPopover Open="@shelter.DisplayPhone" Fixed="true" Elevation="0" Class="pa-4">
+                                    <MudText Typo="Typo.h5" Color="Color.Primary">@shelter.Phone</MudText>
+                                </MudPopover>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <div>
+                                <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                    Adresa: @shelter.Address.City.Name, @shelter.Address.Region.Name
+                                </MudText>
+                            </div>
+                            <div class="mt-2">
+                                <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                    Număr persoane: adulți - @shelter.AdultCapacity, copii - @shelter.ChildrenCapacity
+                                </MudText>
+                            </div>
+                            <div class="mt-2">
+                                <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                    Perioadă: @shelter.Period.Text()
+                                </MudText>
+                            </div>
+                        </MudCardContent>
+                        <MudCardActions Class="d-flex justify-space-between">
+                            <div>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success"
                                    StartIcon="@Icons.Filled.Check" DisableElevation="true">
-                                Rezolvat
-                            </MudButton>
-                        </div>
-                        <div>
-                            <MudButton Variant="Variant.Text" Color="Color.Error"
+                                    Rezolvat
+                                </MudButton>
+                            </div>
+                            <div>
+                                <MudButton Variant="Variant.Text" Color="Color.Error"
                                    StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
-                                Nu mai e valabil
-                            </MudButton>
-                        </div>
-                    </MudCardActions>
-                </MudCard>
-            }
+                                    Nu mai e valabil
+                                </MudButton>
+                            </div>
+                        </MudCardActions>
+                    </MudCard>
+                }
 
-            <div hidden="@(Result.ShelterResults.Count != 0)">
-                <MudText>
-                    Nu am găsit rezultate.<br />
-                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
-                </MudText>
-            </div>
-        </MudTabPanel>
+                <div hidden="@(Result.ShelterResults.Count != 0)">
+                    <MudText>
+                        Nu am găsit rezultate.<br />
+                        Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
+                    </MudText>
+                </div>
+            </MudTabPanel>
+        }
     </MudTabs>
 </div>
 
