@@ -11,7 +11,6 @@ namespace BlazorApp.Shared
         public SearchOffersRequest()
         {
             Shelter = new ShelterModel();
-            Transport = new TransportModel();
             Address = new AddressModel();
         }
 
@@ -22,8 +21,6 @@ namespace BlazorApp.Shared
         public string StartingPoint { get; set; }
 
         public ShelterModel Shelter { get; set; }
-
-        public TransportModel Transport { get; set; }
 
         public AddressModel Address { get; set; }
 
@@ -39,11 +36,6 @@ namespace BlazorApp.Shared
             public TimePeriod Period { get; set; }
 
             public bool AllowsPets { get; set; }
-        }
-
-        public class TransportModel
-        {
-            public bool IsNeeded { get; set; }
         }
     }
 
@@ -73,26 +65,6 @@ namespace BlazorApp.Shared
                 .IsInEnum()
                 .When(x => x.Shelter.IsNeeded)
                 .WithMessage("Perioada este necesară!");
-
-            RuleFor(x => x.Transport.IsNeeded)
-                .Must(isNeeded => isNeeded)
-                .When(x => !x.Shelter.IsNeeded)
-                .WithMessage("Trebuie să selectezi transport, adăpost sau ambele!");
-
-            RuleFor(x => x.Shelter.IsNeeded)
-                .Must(isNeeded => isNeeded)
-                .When(x => !x.Transport.IsNeeded)
-                .WithMessage("Trebuie să selectezi transport, adăpost sau ambele!");
-
-            RuleFor(x => x.Address.Region.Id)
-                .NotEmpty()
-                .When(x => x.Transport.IsNeeded && !x.Shelter.IsNeeded)
-                .WithMessage("Destinația este necesară!");
-
-            RuleFor(x => x.Address.City.Id)
-                .NotEmpty()
-                .When(x => x.Transport.IsNeeded && !x.Shelter.IsNeeded)
-                .WithMessage("Destinația este necesară!");
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>

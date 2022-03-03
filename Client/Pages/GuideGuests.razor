@@ -23,6 +23,18 @@
                       Label="Nr. copii" Class="mt-4" />
 
         <div class="mt-6">
+            <MudAutocomplete @bind-Value="request.StartingPoint" For="@(() => request.StartingPoint)"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint"
+                             Label="Loc de plecare" Class="mt-4" />
+            <MudAutocomplete @bind-Value="request.Address.Region" T="RegionModel" For="@(() => request.Address.Region)"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
+                             Label="Destinație (județ)" Class="mt-4" />
+            <MudAutocomplete @bind-Value="request.Address.City" T="CityModel" For="@(() => request.Address.City)"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchCity" ToStringFunc=@(x => x.Name)
+                             Label="Destinație (oraș)" Class="mt-4" Disabled=@(request.Address.Region.Id == 0) />
+        </div>
+
+        <div class="mt-6">
             <MudSwitch @bind-Checked="@request.Shelter.IsNeeded" For="@(() => request.Shelter.IsNeeded)"
                        Label="Nevoie de adăpost" Color="Color.Primary" />
             <div hidden="@(!request.Shelter.IsNeeded)">
@@ -38,23 +50,6 @@
                 <MudSwitch @bind-Checked="@request.Shelter.AllowsPets" For="@(() => request.Shelter.AllowsPets)"
                            Label="Animale domestice" Color="Color.Success" Class="mt-4" />
             </div>
-        </div>
-
-        <div class="mt-6">
-            <MudSwitch @bind-Checked="@request.Transport.IsNeeded" For="@(() => request.Transport.IsNeeded)"
-                       Label="Nevoie de transport" Color="Color.Primary" />
-        </div>
-
-        <div class="mt-6">
-            <MudAutocomplete @bind-Value="request.StartingPoint" For="@(() => request.StartingPoint)"
-                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint"
-                             Label="Loc de plecare" Class="mt-4" />
-            <MudAutocomplete @bind-Value="request.Address.Region" T="RegionModel" For="@(() => request.Address.Region)"
-                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
-                             Label="Destinație (județ)" Class="mt-4" />
-            <MudAutocomplete @bind-Value="request.Address.City" T="CityModel" For="@(() => request.Address.City)"
-                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchCity" ToStringFunc=@(x => x.Name)
-                             Label="Destinație (oraș)" Class="mt-4" Disabled=@(request.Address.Region.Id == 0) />
         </div>
 
         <div class="mt-10">
