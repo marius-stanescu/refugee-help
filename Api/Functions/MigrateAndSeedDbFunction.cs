@@ -13,16 +13,16 @@ using Newtonsoft.Json;
 
 namespace BlazorApp.Api.Functions;
 
-public class MigrateDbAndSeedDataFunction
+public class MigrateAndSeedDbFunction
 {
     private readonly RefugeesDbContext _dbContext;
 
-    public MigrateDbAndSeedDataFunction(RefugeesDbContext dbContext)
+    public MigrateAndSeedDbFunction(RefugeesDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    [FunctionName("MigrateDbAndSeedDataFunction")]
+    [FunctionName("MigrateAndSeedDbFunction")]
     public void Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
         ILogger log,
