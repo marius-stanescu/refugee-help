@@ -40,12 +40,12 @@ namespace BlazorApp.Api.Functions
                     shelterQuery = shelterQuery.Where(s => s.AllowsPets);
                 }
 
-                if (request.Address?.Region is not null)
+                if (request.Address?.Region?.Id > 0)
                 {
                     shelterQuery = shelterQuery.Where(s => s.Address.RegionId == request.Address.Region.Id);
                 }
 
-                if (request.Address?.City is not null)
+                if (request.Address?.City?.Id > 0)
                 {
                     shelterQuery = shelterQuery.Where(s => s.Address.CityId == request.Address.City.Id);
                 }
@@ -79,12 +79,12 @@ namespace BlazorApp.Api.Functions
                     .Where(t => t.StartingPoint == request.StartingPoint)
                     .AsQueryable();
 
-                if (request.Address?.Region is not null)
+                if (request.Address?.Region?.Id > 0)
                 {
                     transportQuery = transportQuery.Where(s => s.Destination.RegionId == request.Address.Region.Id);
                 }
 
-                if (request.Address?.City is not null)
+                if (request.Address?.City?.Id > 0)
                 {
                     transportQuery = transportQuery.Where(s => s.Destination.CityId == request.Address.City.Id);
                 }
