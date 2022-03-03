@@ -98,7 +98,6 @@
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
     private string[] startingPoints = new string[] { };
-    private string[] cities = new string[] { };
     private IEnumerable<TimePeriodModel> timePeriods = new HashSet<TimePeriodModel> { };
 
     protected override async Task OnInitializedAsync()
@@ -110,7 +109,7 @@
         }
         catch (Exception)
         {
-            Snackbar.Add("Perioadele de cazare au putut fi încărcate!", Severity.Error);
+            Snackbar.Add("Perioadele nu au putut fi încărcate!", Severity.Error);
         }
     }
 

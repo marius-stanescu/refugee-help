@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,19 +63,6 @@ namespace BlazorApp.Shared
 
             public TimePeriod Period { get; set; }
         }
-
-        public class AddressModel
-        {
-            public AddressModel()
-            {
-                Region = new RegionModel();
-                City = new CityModel();
-            }
-
-            public RegionModel Region { get; set; }
-
-            public CityModel City { get; set; }
-        }
     }
 
     public class AddOfferRequestValidator : AbstractValidator<AddOfferRequest>
@@ -95,19 +82,19 @@ namespace BlazorApp.Shared
             RuleFor(x => x.Transport.IsOffered)
                 .Must(isOffered => isOffered)
                 .When(x => !x.Shelter.IsOffered)
-                .WithMessage("Oferta trebuie să includă transport, cazare sau ambele!");
+                .WithMessage("Oferta trebuie să includă transport, adăpost sau ambele!");
 
             RuleFor(x => x.Transport.StartingPoint)
                 .NotEmpty()
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Locul de plecare este necesar!");
 
-            RuleFor(x => x.Transport.Destination.Region)
+            RuleFor(x => x.Transport.Destination.Region.Id)
                 .NotEmpty()
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Destinația este necesară!");
 
-            RuleFor(x => x.Transport.Destination.City)
+            RuleFor(x => x.Transport.Destination.City.Id)
                 .NotEmpty()
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Destinația este necesară!");
@@ -135,14 +122,14 @@ namespace BlazorApp.Shared
             RuleFor(x => x.Shelter.IsOffered)
                 .Must(isOffered => isOffered)
                 .When(x => !x.Transport.IsOffered)
-                .WithMessage("Oferta trebuie să includă transport, cazare sau ambele!");
+                .WithMessage("Oferta trebuie să includă transport, adăpost sau ambele!");
 
-            RuleFor(x => x.Shelter.Address.Region)
+            RuleFor(x => x.Shelter.Address.Region.Id)
                 .NotEmpty()
                 .When(x => x.Shelter.IsOffered && !x.Transport.IsOffered)
                 .WithMessage("Județul este necesar!");
 
-            RuleFor(x => x.Shelter.Address.City)
+            RuleFor(x => x.Shelter.Address.City.Id)
                 .NotEmpty()
                 .When(x => x.Shelter.IsOffered && !x.Transport.IsOffered)
                 .WithMessage("Orașul este necesar!");

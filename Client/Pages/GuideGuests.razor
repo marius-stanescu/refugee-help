@@ -1,0 +1,141 @@
+﻿@page "/guide-guests"
+
+@using BlazorApp.Shared
+
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Ghidează refugiați</PageTitle>
+
+<MudPaper Class="mt-5 pa-4">
+    <h3>Ghidează un grup de refugiați</h3>
+    <MudForm Model="@request" @ref="@form" @bind-Errors="@errors"
+             Validation="@(requestValidator.ValidateValue)" ValidationDelay="0">
+
+        <MudTextField @bind-Value="request.NumberOfAdults" For="@(() => request.NumberOfAdults)"
+                      Label="Nr. adulți" Class="mt-4" />
+        <MudTextField @bind-Value="request.NumberOfChildren" For="@(() => request.NumberOfChildren)"
+                      Label="Nr. copii" Class="mt-4" />
+
+        <div class="mt-6">
+            <MudSwitch @bind-Checked="@request.Shelter.IsNeeded" For="@(() => request.Shelter.IsNeeded)"
+                       Label="Nevoie de adăpost" Color="Color.Primary" />
+            <div hidden="@(!request.Shelter.IsNeeded)">
+                <MudSelect @bind-Value="request.Shelter.Period" For="@(() => request.Shelter.Period)"
+                           Label="Perioadă" Class="mt-2">
+                    @foreach (var timePeriod in timePeriods)
+                    {
+                        <MudSelectItem Value="@timePeriod.Period">
+                            @timePeriod.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <MudSwitch @bind-Checked="@request.Transport.IsNeeded" For="@(() => request.Transport.IsNeeded)"
+                       Label="Nevoie de transport" Color="Color.Primary" />
+        </div>
+
+        <div class="mt-6">
+            <MudAutocomplete @bind-Value="request.Address.Region" T="RegionModel" For="@(() => request.Address.Region)"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
+                             Label="Destinație (județ)" />
+            <MudAutocomplete @bind-Value="request.Address.City" T="CityModel" For="@(() => request.Address.City)"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchCity" ToStringFunc=@(x => x.Name)
+                             Label="Destinație (oraș)" Disabled=@(request.Address.Region.Id == 0) />
+        </div>
+
+        <div class="mt-10">
+            <div class="mb-6">
+                @foreach (var error in errors)
+                {
+                    <MudText Color="@Color.Error">@error</MudText>
+                }
+            </div>
+            <div class="d-flex align-center justify-space-between">
+                <MudButton Link="/" Variant="Variant.Outlined" Color="Color.Dark"
+                           StartIcon="@Icons.Filled.ArrowBackIosNew" Class="mx-2">
+                    Înapoi
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true"
+                           OnClick="@(async () => await Submit())">
+                    Caută
+                </MudButton>
+            </div>
+        </div>
+    </MudForm>
+</MudPaper>
+
+@code {
+
+    private string[] errors = { };
+    private MudForm form = new MudForm();
+    private SearchOffersRequest request = new SearchOffersRequest();
+    private GuideGuestsRequestValidator requestValidator = new GuideGuestsRequestValidator();
+    private IEnumerable<TimePeriodModel> timePeriods = new HashSet<TimePeriodModel> { };
+
+    private SearchOffersResult offersResult = new SearchOffersResult();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            timePeriods = await Http.GetFromJsonAsync<HashSet<TimePeriodModel>>("/api/GetTimePeriods")
+                ?? new HashSet<TimePeriodModel> { };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Perioadele nu au putut fi încărcate!", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<RegionModel>> SearchRegion(string value)
+    {
+        try
+        {
+            var regions = await Http.GetFromJsonAsync<IEnumerable<RegionModel>>("/api/GetRegions") ?? new RegionModel[] { };
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return regions;
+            }
+
+            return regions.Where(r => r.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Județele nu au putut fi încărcate!", Severity.Error);
+            return new RegionModel[] { };
+        }
+    }
+
+    private async Task<IEnumerable<CityModel>> SearchCity(string value)
+    {
+        try
+        {
+            var regionId = request.Address.Region.Id;
+            return await Http.GetFromJsonAsync<IEnumerable<CityModel>>($"/api/GetCities?regionId={regionId}&name={value}")
+                ?? new CityModel[] { };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
+            return new CityModel[] { };
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await Http.PostAsJsonAsync("/api/SearchOffers", request);
+            offersResult = (await response.Content.ReadFromJsonAsync<SearchOffersResult>()) ?? new SearchOffersResult();
+        }
+    }
+
+}
