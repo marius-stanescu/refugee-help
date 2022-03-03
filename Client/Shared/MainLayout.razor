@@ -6,7 +6,8 @@
 
 <MudLayout>
     <MudAppBar Elevation="0" Fixed="true" Style="@($"border-bottom: 5px solid {Ukraine.Palette.Secondary};")">
-        <MudIconButton Link="/" Icon="@Icons.Filled.Home" Color="Color.Secondary" Variant="Variant.Outlined" Size="Size.Medium" />
+        <MudIconButton Icon="@Icons.Filled.Home" Variant="Variant.Filled" Color="Color.Secondary"
+                       Size="Size.Large" DisableElevation="true" />
     </MudAppBar>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Medium">
@@ -15,7 +16,7 @@
     </MudMainContent>
 </MudLayout>
 
-@code{
+@code {
     MudTheme Ukraine = new MudTheme()
     {
         Palette = new Palette()
