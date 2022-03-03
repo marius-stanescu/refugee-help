@@ -17,9 +17,9 @@
     <MudForm Model="@request" @ref="@form" @bind-Errors="@errors"
              Validation="@(requestValidator.ValidateValue)" ValidationDelay="0">
 
-        <MudTextField @bind-Value="request.NumberOfAdults" For="@(() => request.NumberOfAdults)"
+        <MudNumericField @bind-Value="request.NumberOfAdults" For="@(() => request.NumberOfAdults)"
                       Label="Nr. adulți" Class="mt-4" />
-        <MudTextField @bind-Value="request.NumberOfChildren" For="@(() => request.NumberOfChildren)"
+        <MudNumericField @bind-Value="request.NumberOfChildren" For="@(() => request.NumberOfChildren)"
                       Label="Nr. copii" Class="mt-4" />
 
         <div class="mt-6">
