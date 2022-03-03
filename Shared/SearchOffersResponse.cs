@@ -32,6 +32,8 @@ namespace BlazorApp.Shared
 
             public int ChildrenCapacity { get; set; }
 
+            public TimePeriod Period { get; set; }
+
             public AddressModel Address { get; set; }
         }
 

@@ -54,8 +54,8 @@
                            Label="Perioadă" Class="mt-2">
                     @foreach (var timePeriod in timePeriods)
                     {
-                        <MudSelectItem Value="@timePeriod.Period">
-                            @timePeriod.Text
+                        <MudSelectItem Value="@timePeriod">
+                            @timePeriod.Text()
                         </MudSelectItem>
                     }
                 </MudSelect>
@@ -98,14 +98,14 @@
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
     private string[] startingPoints = new string[] { };
-    private IEnumerable<TimePeriodModel> timePeriods = new HashSet<TimePeriodModel> { };
+    private IEnumerable<TimePeriod> timePeriods = new HashSet<TimePeriod> { };
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            timePeriods = await Http.GetFromJsonAsync<HashSet<TimePeriodModel>>("/api/GetTimePeriods")
-                ?? new HashSet<TimePeriodModel> { };
+            timePeriods = await Http.GetFromJsonAsync<HashSet<TimePeriod>>("/api/GetTimePeriods")
+                ?? new HashSet<TimePeriod> { };
         }
         catch (Exception)
         {

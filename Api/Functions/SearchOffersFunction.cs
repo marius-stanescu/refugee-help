@@ -58,6 +58,7 @@ namespace BlazorApp.Api.Functions
                         Phone = s.ContactPerson.Phone,
                         AdultCapacity = s.AdultCapacity,
                         ChildrenCapacity = s.ChildrenCapacity,
+                        Period = s.Period,
                         Address = new AddressModel
                         {
                             Region = new RegionModel(s.Address.Region.Id, s.Address.Region.Name),

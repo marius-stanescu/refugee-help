@@ -3,8 +3,8 @@
 @using BlazorApp.Shared
 
 <div class="mt-5">
-    <MudTabs ApplyEffectsToContainer="true" PanelClass="pa-6" Elevation="1" hidden="@noResults">
-        <MudTabPanel Text="Transport" Icon="@Icons.Filled.TimeToLeave" hidden="@(Result.TransportResults.Count == 0)">
+    <MudTabs ApplyEffectsToContainer="true" PanelClass="pa-6" Elevation="1">
+        <MudTabPanel Text="Transport" Icon="@Icons.Filled.TimeToLeave">
             @foreach (var transport in Result.TransportResults)
             {
                 <MudCard Class="mb-6 pl-2 pb-2 pr-2">
@@ -42,7 +42,7 @@
                             </MudText>
                         </div>
                         <div class="d-flex justify-start" hidden="@(!transport.LeavesAt.HasValue)">
-                            <MudIcon Icon="@Icons.Filled.TimeToLeave" Size="Size.Medium" />
+                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" />
                             <MudText Typo="Typo.body1" Class="ml-2">
                                 Pleacă la: @($"{transport.LeavesAt:HH:mm - dd.MM.yyyy}")
                             </MudText>
@@ -64,18 +64,83 @@
                     </MudCardActions>
                 </MudCard>
             }
+
+            <div hidden="@(Result.TransportResults.Count != 0)">
+                <MudText>
+                    Nu am găsit rezultate.<br />
+                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/">refugees.ro</MudLink>.
+                </MudText>
+            </div>
         </MudTabPanel>
-        <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home" Disabled="@(Result.ShelterResults.Count == 0)">
-            <MudText>Content Two</MudText>
+        <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home">
+            @foreach (var shelter in Result.ShelterResults)
+            {
+                <MudCard Class="mb-6 pl-2 pb-2 pr-2">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">@shelter.Name</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudToggleIconButton @bind-Toggled="@shelter.DisplayPhone"
+                                             Icon="@Icons.Filled.Call" Color="Color.Primary" Size="Size.Large"
+                                             ToggledIcon="@Icons.Filled.Call" ToggledColor="@Color.Error" ToggledSize="Size.Large" />
+                            <MudPopover Open="@shelter.DisplayPhone" Fixed="true" Class="px-4 pt-4">
+                                <div class="d-flex flex-column">
+                                    <MudText Typo="Typo.h5" Class="pa-2">@shelter.Phone</MudText>
+                                    <MudButton OnClick="@(() => { shelter.DisplayPhone = false; })"
+                                           Variant="Variant.Text" StartIcon="@Icons.Filled.Close"
+                                           Color="Color.Error" Class="ml-auto mr-n3 mb-1">
+                                        Închide
+                                    </MudButton>
+                                </div>
+                            </MudPopover>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <div class="d-flex justify-start">
+                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Class="ml-2">
+                                Adresa: @shelter.Address.City.Name, @shelter.Address.Region.Name
+                            </MudText>
+                        </div>
+                        <div class="d-flex justify-start">
+                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Class="ml-2">
+                                Număr persoane: adulți - @shelter.AdultCapacity, copii - @shelter.ChildrenCapacity
+                            </MudText>
+                        </div>
+                        <div class="d-flex justify-start">
+                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" />
+                            <MudText Typo="Typo.body1" Class="ml-2">
+                                Perioadă: @shelter.Period.Text()
+                            </MudText>
+                        </div>
+                    </MudCardContent>
+                    <MudCardActions Class="d-flex justify-space-between">
+                        <div>
+                            <MudButton Variant="Variant.Filled" Color="Color.Success"
+                                   StartIcon="@Icons.Filled.Check" DisableElevation="true">
+                                Rezolvat
+                            </MudButton>
+                        </div>
+                        <div>
+                            <MudButton Variant="Variant.Text" Color="Color.Error"
+                                   StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
+                                Nu mai e valabil
+                            </MudButton>
+                        </div>
+                    </MudCardActions>
+                </MudCard>
+            }
+
+            <div hidden="@(Result.ShelterResults.Count != 0)">
+                <MudText>
+                    Nu am găsit rezultate.<br />
+                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/">refugees.ro</MudLink>.
+                </MudText>
+            </div>
         </MudTabPanel>
     </MudTabs>
-
-    <div hidden="@(!noResults)">
-        <MudText>
-            Nu am găsit rezultate.<br />
-            Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/">refugees.ro</MudLink>.
-        </MudText>
-    </div>
 </div>
 
 @code {
@@ -84,9 +149,5 @@
     public SearchOffersResult Result { get; set; } = new SearchOffersResult();
 
     public bool _isOpen;
-
-    private bool noResults => Result.TransportResults.Count == 0
-        && Result.ShelterResults.Count == 0
-        && Result.TransportAndShelterResults.Count == 0;
 
 }

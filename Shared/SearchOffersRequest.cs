@@ -29,6 +29,11 @@ namespace BlazorApp.Shared
 
         public class ShelterModel
         {
+            public ShelterModel()
+            {
+                Period = TimePeriod.OneToThreeDays;
+            }
+
             public bool IsNeeded { get; set; }
 
             public TimePeriod Period { get; set; }

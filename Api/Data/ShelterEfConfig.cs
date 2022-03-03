@@ -1,5 +1,5 @@
-﻿using System;
-using BlazorApp.Api.Domain;
+﻿using BlazorApp.Api.Domain;
+using BlazorApp.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +9,9 @@ namespace BlazorApp.Api.Data
     {
         public void Configure(EntityTypeBuilder<Shelter> builder)
         {
-            builder.HasKey(t => t.Id);
+            builder.HasKey(s => s.Id);
+
+            builder.Property(s => s.Period).HasDefaultValue(TimePeriod.OneToThreeDays);
 
             builder.OwnsOne(t => t.ContactPerson, b =>
             {
@@ -19,18 +21,18 @@ namespace BlazorApp.Api.Data
                 b.Property(cp => cp.Phone).IsRequired();
             });
 
-            builder.OwnsOne(t => t.Address, b =>
+            builder.OwnsOne(s => s.Address, b =>
             {
                 b.WithOwner().HasForeignKey("ShelterId");
 
-                b.HasOne(d => d.Region)
+                b.HasOne(a => a.Region)
                     .WithMany()
-                    .HasForeignKey(d => d.RegionId)
+                    .HasForeignKey(a => a.RegionId)
                     .OnDelete(DeleteBehavior.NoAction);
 
-                b.HasOne(d => d.City)
+                b.HasOne(a => a.City)
                     .WithMany()
-                    .HasForeignKey(d => d.CityId)
+                    .HasForeignKey(a => a.CityId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
         }

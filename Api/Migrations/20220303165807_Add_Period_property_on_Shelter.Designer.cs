@@ -4,6 +4,7 @@ using BlazorApp.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp.Api.Migrations
 {
     [DbContext(typeof(RefugeesDbContext))]
-    partial class RefugeesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220303165807_Add_Period_property_on_Shelter")]
+    partial class Add_Period_property_on_Shelter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

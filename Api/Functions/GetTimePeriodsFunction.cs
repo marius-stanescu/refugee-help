@@ -13,14 +13,14 @@ public static class GetTimePeriodsFunction
     public static IActionResult Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
     {
-        var timePeriods = new HashSet<TimePeriodModel>
+        var timePeriods = new HashSet<TimePeriod>
         {
-            new TimePeriodModel(TimePeriod.OneToThreeDays, "1 - 3 zile"),
-            new TimePeriodModel(TimePeriod.ThreeDaysToAWeek, "3 - 7 zile"),
-            new TimePeriodModel(TimePeriod.OneToTwoWeeks, "1 - 2 săptămâni"),
-            new TimePeriodModel(TimePeriod.ThreeToFourWeeks, "3 - 4 săptămâni"),
-            new TimePeriodModel(TimePeriod.OneToTwoMonths, "1 - 2 luni"),
-            new TimePeriodModel(TimePeriod.Indefinite, "nedeterminat"),
+            TimePeriod.OneToThreeDays,
+            TimePeriod.ThreeDaysToAWeek,
+            TimePeriod.OneToTwoWeeks,
+            TimePeriod.ThreeToFourWeeks,
+            TimePeriod.OneToTwoMonths,
+            TimePeriod.Indefinite,
         };
 
         return new OkObjectResult(timePeriods);
