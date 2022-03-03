@@ -8,7 +8,11 @@
 
 <PageTitle>Ghidează refugiați</PageTitle>
 
-<MudPaper Class="mt-5 pa-4">
+<div class="loader-wrapper" hidden="@(!requestStarted || requestCompleted)">
+    <span class="loader"></span>
+</div>
+
+<MudPaper Class="mt-5 pa-4" hidden="@(requestStarted)">
     <h3>Ghidează un grup de refugiați</h3>
     <MudForm Model="@request" @ref="@form" @bind-Errors="@errors"
              Validation="@(requestValidator.ValidateValue)" ValidationDelay="0">
@@ -31,6 +35,8 @@
                         </MudSelectItem>
                     }
                 </MudSelect>
+                <MudSwitch @bind-Checked="@request.Shelter.AllowsPets" For="@(() => request.Shelter.AllowsPets)"
+                           Label="Animale domestice" Color="Color.Success" Class="mt-4" />
             </div>
         </div>
 
@@ -40,12 +46,15 @@
         </div>
 
         <div class="mt-6">
+            <MudAutocomplete @bind-Value="request.StartingPoint" For="@(() => request.StartingPoint)"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint"
+                             Label="Loc de plecare" Class="mt-4" />
             <MudAutocomplete @bind-Value="request.Address.Region" T="RegionModel" For="@(() => request.Address.Region)"
                              ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
-                             Label="Destinație (județ)" />
+                             Label="Destinație (județ)" Class="mt-4" />
             <MudAutocomplete @bind-Value="request.Address.City" T="CityModel" For="@(() => request.Address.City)"
                              ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchCity" ToStringFunc=@(x => x.Name)
-                             Label="Destinație (oraș)" Disabled=@(request.Address.Region.Id == 0) />
+                             Label="Destinație (oraș)" Class="mt-4" Disabled=@(request.Address.Region.Id == 0) />
         </div>
 
         <div class="mt-10">
@@ -69,6 +78,11 @@
     </MudForm>
 </MudPaper>
 
+@if (requestCompleted)
+{
+    <SearchResults Result="@searchResult" />
+}
+
 @code {
 
     private string[] errors = { };
@@ -76,8 +90,10 @@
     private SearchOffersRequest request = new SearchOffersRequest();
     private GuideGuestsRequestValidator requestValidator = new GuideGuestsRequestValidator();
     private IEnumerable<TimePeriodModel> timePeriods = new HashSet<TimePeriodModel> { };
-
-    private SearchOffersResult offersResult = new SearchOffersResult();
+    
+    private bool requestStarted = false;
+    private bool requestCompleted = false;
+    private SearchOffersResult searchResult = new SearchOffersResult();
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,6 +105,26 @@
         catch (Exception)
         {
             Snackbar.Add("Perioadele nu au putut fi încărcate!", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchStartingPoint(string value)
+    {
+        try
+        {
+            var startingPoints = await Http.GetFromJsonAsync<string[]>("/api/GetStartingPoints") ?? new string[] { };
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return startingPoints;
+            }
+
+            return startingPoints.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Locurile de plecare nu au putut fi încărcate!", Severity.Error);
+            return new string[] { };
         }
     }
 
@@ -133,8 +169,12 @@
 
         if (form.IsValid)
         {
+            requestStarted = true;
+            
             var response = await Http.PostAsJsonAsync("/api/SearchOffers", request);
-            offersResult = (await response.Content.ReadFromJsonAsync<SearchOffersResult>()) ?? new SearchOffersResult();
+            searchResult = (await response.Content.ReadFromJsonAsync<SearchOffersResult>()) ?? new SearchOffersResult();
+
+            requestCompleted = true;
         }
     }
 

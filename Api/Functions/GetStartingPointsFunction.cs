@@ -15,7 +15,6 @@ public static class GetStartingPointsFunction
     {
         var startingPoints = new HashSet<string>
         {
-            "Oriunde",
             "Vama Isaccea", "Vama Tulcea", "Vama Sighetu Marmației", "Vama Siret", "Vama Câmpulung la Tisa", "Vama Fălciu", "Vama Galați", "Vama Albița", "Vama Nicolina", "Vama Oancea", "Vama Suculeni", "Vama Stânca",
         };
 

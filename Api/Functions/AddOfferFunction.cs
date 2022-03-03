@@ -1,5 +1,4 @@
-﻿using System;
-using BlazorApp.Api.Data;
+﻿using BlazorApp.Api.Data;
 using BlazorApp.Api.Domain;
 using BlazorApp.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +37,7 @@ namespace BlazorApp.Api.Functions
                     },
                     AdultSeats = request.Transport.AdultSeats,
                     ChildSeats = request.Transport.ChildSeats,
-                    ExpiresOn = GetExpiresOnValue(request.Transport),
+                    ExpiresOn = request.Transport.ExpiresOn,
                 };
 
                 _dbContext.Add(transport);
@@ -65,7 +64,7 @@ namespace BlazorApp.Api.Functions
                     AdultCapacity = request.Shelter.AdultCapacity,
                     ChildrenCapacity = request.Shelter.ChildrenCapacity,
                     AllowsPets = request.Shelter.AllowsPets,
-                    MaxPeriodInDays = GetAmountOfDays(request.Shelter),
+                    MaxPeriodInDays = request.Shelter.Period.InDays(),
                 };
 
                 _dbContext.Add(shelter);
@@ -74,27 +73,6 @@ namespace BlazorApp.Api.Functions
             _dbContext.SaveChanges();
 
             return new OkResult();
-        }
-
-        private static DateTime? GetExpiresOnValue(AddOfferRequest.TransportOfferModel transportModel)
-        {
-            return transportModel.ExpiryDate.HasValue && transportModel.ExpiryTime.HasValue
-                ? transportModel.ExpiryDate.Value.Add(transportModel.ExpiryTime.Value)
-                : transportModel.ExpiryDate;
-        }
-
-        private static int GetAmountOfDays(AddOfferRequest.ShelterOfferModel shelterModel)
-        {
-            return shelterModel.Period switch
-            {
-                TimePeriod.OneToThreeDays => 3,
-                TimePeriod.ThreeDaysToAWeek => 7,
-                TimePeriod.OneToTwoWeeks => 2 * 7,
-                TimePeriod.ThreeToFourWeeks => 4 * 7,
-                TimePeriod.OneToTwoMonths => 2 * 4 * 7,
-                TimePeriod.Indefinite => 1000,
-                _ => 0,
-            };
         }
     }
 }

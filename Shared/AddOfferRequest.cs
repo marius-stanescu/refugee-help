@@ -42,6 +42,30 @@ namespace BlazorApp.Shared
             public DateTime? ExpiryDate { get; set; }
 
             public TimeSpan? ExpiryTime { get; set; }
+
+            public DateTime? ExpiresOn
+            {
+                get
+                {
+
+                    if (ExpiryTime.HasValue)
+                    {
+                        if (ExpiryDate.HasValue)
+                        {
+                            return ExpiryDate.Value.Add(ExpiryTime.Value);
+                        }
+
+                        return DateTime.Today.Add(ExpiryTime.Value);
+                    }
+
+                    if (ExpiryDate.HasValue)
+                    {
+                        return ExpiryDate.Value.AddDays(1);
+                    }
+
+                    return null;
+                }
+            }
         }
 
         public class ShelterOfferModel

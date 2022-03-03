@@ -32,6 +32,8 @@ namespace BlazorApp.Shared
             public bool IsNeeded { get; set; }
 
             public TimePeriod Period { get; set; }
+
+            public bool AllowsPets { get; set; }
         }
 
         public class TransportModel
@@ -76,6 +78,16 @@ namespace BlazorApp.Shared
                 .Must(isNeeded => isNeeded)
                 .When(x => !x.Transport.IsNeeded)
                 .WithMessage("Trebuie să selectezi transport, adăpost sau ambele!");
+
+            RuleFor(x => x.Address.Region.Id)
+                .NotEmpty()
+                .When(x => x.Transport.IsNeeded && !x.Shelter.IsNeeded)
+                .WithMessage("Destinația este necesară!");
+
+            RuleFor(x => x.Address.City.Id)
+                .NotEmpty()
+                .When(x => x.Transport.IsNeeded && !x.Shelter.IsNeeded)
+                .WithMessage("Destinația este necesară!");
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
