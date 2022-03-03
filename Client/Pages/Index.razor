@@ -1,10 +1,11 @@
 ﻿@page "/"
 
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
 
 <PageTitle>Ajutor refugiați</PageTitle>
 
-<div class="">
+<MudContainer MaxWidth="MaxWidth.Small">
     <div class="d-flex justify-center mt-10 pa-5">
         <MudButton Link="guide-guests" Variant="Variant.Filled" StartIcon="@Icons.Filled.AltRoute"
             Color="Color.Primary" Size="Size.Large">
@@ -17,10 +18,4 @@
             Adaugă ofertă
         </MudButton>
     </div>
-    <div class="d-flex justify-center pa-3" hidden>
-        <MudButton Link="add-offer" Variant="Variant.Filled" StartIcon="@Icons.Filled.ListAlt"
-                   Color="Color.Transparent" Size="Size.Small" Style="text-transform:none">
-            Vezi oferte
-        </MudButton>
-    </div>
-</div>
+</MudContainer>
