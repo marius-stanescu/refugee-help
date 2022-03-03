@@ -81,6 +81,12 @@
 @if (requestCompleted)
 {
     <SearchResults Result="@searchResult" />
+    <div class="mt-6 mb-6">
+        <MudButton OnClick="@(() => { requestStarted = false; requestCompleted = false; })"
+               Variant="Variant.Outlined" StartIcon="@Icons.Filled.ArrowBackIosNew">
+            Înapoi
+        </MudButton>
+    </div>
 }
 
 @code {
@@ -90,7 +96,7 @@
     private SearchOffersRequest request = new SearchOffersRequest();
     private GuideGuestsRequestValidator requestValidator = new GuideGuestsRequestValidator();
     private IEnumerable<TimePeriodModel> timePeriods = new HashSet<TimePeriodModel> { };
-    
+
     private bool requestStarted = false;
     private bool requestCompleted = false;
     private SearchOffersResult searchResult = new SearchOffersResult();
@@ -170,7 +176,7 @@
         if (form.IsValid)
         {
             requestStarted = true;
-            
+
             var response = await Http.PostAsJsonAsync("/api/SearchOffers", request);
             searchResult = (await response.Content.ReadFromJsonAsync<SearchOffersResult>()) ?? new SearchOffersResult();
 

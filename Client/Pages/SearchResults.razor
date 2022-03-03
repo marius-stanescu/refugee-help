@@ -3,7 +3,7 @@
 @using BlazorApp.Shared
 
 <div class="mt-5">
-    <MudTabs ApplyEffectsToContainer="true" PanelClass="pa-6" Elevation="1">
+    <MudTabs ApplyEffectsToContainer="true" PanelClass="pa-6" Elevation="1" hidden="@noResults">
         <MudTabPanel Text="Transport" Icon="@Icons.Filled.TimeToLeave" hidden="@(Result.TransportResults.Count == 0)">
             @foreach (var transport in Result.TransportResults)
             {
