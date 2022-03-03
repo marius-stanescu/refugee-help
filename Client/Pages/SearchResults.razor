@@ -29,21 +29,21 @@
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
-                        <div class="d-flex justify-start">
-                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" />
-                            <MudText Typo="Typo.body1" Class="ml-2">
+                        <div>
+                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline" />
+                            <MudText Typo="Typo.body1" Class="d-inline ml-2">
                                 Adresa: @transport.Destination.City.Name, @transport.Destination.Region.Name
                             </MudText>
                         </div>
-                        <div class="d-flex justify-start">
-                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" />
-                            <MudText Typo="Typo.body1" Class="ml-2">
+                        <div>
+                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline" />
+                            <MudText Typo="Typo.body1" Class="d-inline ml-2">
                                 Număr persoane: adulți - @transport.AdultSeats, copii - @transport.ChildSeats
                             </MudText>
                         </div>
-                        <div class="d-flex justify-start" hidden="@(!transport.LeavesAt.HasValue)">
-                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" />
-                            <MudText Typo="Typo.body1" Class="ml-2">
+                        <div hidden="@(!transport.LeavesAt.HasValue)">
+                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Class="d-inline" />
+                            <MudText Typo="Typo.body1" Class="d-inline ml-2">
                                 Pleacă la: @($"{transport.LeavesAt:HH:mm - dd.MM.yyyy}")
                             </MudText>
                         </div>
