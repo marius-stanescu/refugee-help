@@ -4,25 +4,27 @@ using System.IO;
 using System.Linq;
 using BlazorApp.Api.Data;
 using BlazorApp.Api.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace BlazorApp.Api.Functions;
 
-public class SeedDataFunction
+public class MigrateDbAndSeedDataFunction
 {
     private readonly RefugeesDbContext _dbContext;
 
-    public SeedDataFunction(RefugeesDbContext dbContext)
+    public MigrateDbAndSeedDataFunction(RefugeesDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    [FunctionName("SeedDataFunction")]
+    [FunctionName("MigrateDbAndSeedDataFunction")]
     public void Run(
-        [TimerTrigger("0 0 0 1 1 *", RunOnStartup = true)] TimerInfo timer,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
         ILogger log,
         ExecutionContext context)
     {
