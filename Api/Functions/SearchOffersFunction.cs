@@ -26,8 +26,7 @@ namespace BlazorApp.Api.Functions
         {
             var result = new SearchOffersResult();
 
-            if (request.Shelter.IsNeeded
-                && !request.Transport.IsNeeded)
+            if (request.Shelter.IsNeeded)
             {
                 var periodInDays = request.Shelter.Period.InDays();
                 var shelterQuery = _dbContext.Set<Shelter>()
@@ -69,8 +68,7 @@ namespace BlazorApp.Api.Functions
                     .ToListAsync();
             }
 
-            if (!request.Shelter.IsNeeded
-                && request.Transport.IsNeeded)
+            if (request.Transport.IsNeeded)
             {
                 var now = DateTime.Now;
                 var transportQuery = _dbContext.Set<Transport>()
