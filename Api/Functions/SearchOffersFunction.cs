@@ -51,6 +51,8 @@ namespace BlazorApp.Api.Functions
                 }
 
                 result.ShelterResults = await shelterQuery
+                    .OrderBy(s => s.MaxPeriodInDays - periodInDays)
+                    .ThenBy(s => s.AdultCapacity - request.NumberOfAdults + s.ChildrenCapacity - request.NumberOfChildren)
                     .Select(s => new SearchOffersResult.ShelterResult
                     {
                         Id = s.Id,
@@ -65,7 +67,7 @@ namespace BlazorApp.Api.Functions
                             City = new CityModel(s.Address.City.Id, s.Address.City.Name),
                         },
                     })
-                    .Take(5)
+                    .Take(10)
                     .ToListAsync();
             }
 
@@ -90,6 +92,9 @@ namespace BlazorApp.Api.Functions
                 }
 
                 result.TransportResults = await transportQuery
+                    .OrderBy(t => !t.ExpiresOn.HasValue)
+                    .ThenBy(t => t.ExpiresOn)
+                    .ThenBy(t => t.AdultSeats - request.NumberOfAdults + t.ChildSeats - request.NumberOfChildren)
                     .Select(t => new SearchOffersResult.TransportResult
                     {
                         Id = t.Id,
@@ -104,7 +109,7 @@ namespace BlazorApp.Api.Functions
                         },
                         LeavesAt = t.ExpiresOn,
                     })
-                    .Take(5)
+                    .Take(10)
                     .ToListAsync();
             }
 
