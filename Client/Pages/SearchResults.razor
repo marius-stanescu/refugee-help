@@ -1,9 +1,8 @@
 @page "/search-results"
 
-@using BlazorApp.Shared
-
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <div class="mt-5">
     <MudTabs ApplyEffectsToContainer="true" PanelClass="pa-6" Elevation="1">
@@ -155,20 +154,14 @@
 
     public bool _isOpen;
 
-    private async Task DeactivateOffer(SearchOffersResult.BaseOfferResult offer)
+    private void DeactivateOffer(SearchOffersResult.BaseOfferResult offer)
     {
-        try
-        {
-            var request = new DeactivateOfferRequest(offer.Id, "No longer available");
-            await Http.PostAsJsonAsync($"/api/DeactivateOffer", request);
+        var parameters = new DialogParameters();
+        parameters.Add("Offer", offer);
 
-            offer.IsActive = false;
-            Snackbar.Add("Oferta a fost dezactivată!", Severity.Success);
-        }
-        catch
-        {
-            Snackbar.Add("Informația despre disponbilitate nu a putut fi salvată!", Severity.Error);
-        }
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+
+        DialogService.Show<DeactivateOfferDialog>("Dezactivare ofertă", parameters, options);
     }
 
 }
