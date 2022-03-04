@@ -17,16 +17,8 @@ namespace BlazorApp.Shared
 
         public ICollection<TransportResult> TransportResults { get; set; }
 
-        public class ShelterResult
+        public class ShelterResult : BaseOfferResult
         {
-            public Guid Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string Phone { get; set; }
-
-            public bool DisplayPhone { get; set; }
-
             public int AdultCapacity { get; set; }
 
             public int ChildrenCapacity { get; set; }
@@ -36,7 +28,18 @@ namespace BlazorApp.Shared
             public AddressModel Address { get; set; }
         }
 
-        public class TransportResult
+        public class TransportResult : BaseOfferResult
+        {
+            public int AdultSeats { get; set; }
+
+            public int ChildSeats { get; set; }
+
+            public AddressModel Destination { get; set; }
+
+            public DateTime? LeavesAt { get; set; }
+        }
+
+        public abstract class BaseOfferResult
         {
             public Guid Id { get; set; }
 
@@ -46,13 +49,7 @@ namespace BlazorApp.Shared
 
             public bool DisplayPhone { get; set; }
 
-            public int AdultSeats { get; set; }
-
-            public int ChildSeats { get; set; }
-
-            public AddressModel Destination { get; set; }
-
-            public DateTime? LeavesAt { get; set; }
+            public bool IsActive { get; set; }
         }
     }
 }

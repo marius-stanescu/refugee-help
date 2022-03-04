@@ -39,9 +39,9 @@ namespace BlazorApp.Shared
         }
     }
 
-    public class GuideGuestsRequestValidator : AbstractValidator<SearchOffersRequest>
+    public class SearchOffersRequestValidator : AbstractValidator<SearchOffersRequest>
     {
-        public GuideGuestsRequestValidator()
+        public SearchOffersRequestValidator()
         {
             RuleFor(x => x.NumberOfAdults)
                 .InclusiveBetween(0, 200)

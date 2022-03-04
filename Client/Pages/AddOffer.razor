@@ -192,7 +192,7 @@
         {
             await Http.PostAsJsonAsync("/api/AddOffer", request);
 
-            Snackbar.Add("Oferta a fost salvată!", Severity.Info);
+            Snackbar.Add("Oferta a fost salvată.", Severity.Success);
 
             NavigationManager.NavigateTo("/");
         }

@@ -25,5 +25,9 @@ namespace BlazorApp.Api.Domain
         public TimePeriod Period { get; set; }
 
         public int MaxPeriodInDays { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public string DeactivationReason { get; set; }
     }
 }

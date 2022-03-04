@@ -22,5 +22,9 @@ namespace BlazorApp.Api.Domain
         public int ChildSeats { get; set; }
 
         public DateTime? ExpiresOn { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public string DeactivationReason { get; set; }
     }
 }

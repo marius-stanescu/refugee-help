@@ -30,6 +30,7 @@ namespace BlazorApp.Api.Functions
             {
                 var periodInDays = request.Shelter.Period.InDays();
                 var shelterQuery = _dbContext.Set<Shelter>()
+                    .Where(s => s.IsActive)
                     .Where(s => s.AdultCapacity >= request.NumberOfAdults)
                     .Where(s => s.ChildrenCapacity >= request.NumberOfChildren)
                     .Where(s => s.MaxPeriodInDays >= periodInDays)
@@ -67,6 +68,7 @@ namespace BlazorApp.Api.Functions
                             Region = new RegionModel(s.Address.Region.Id, s.Address.Region.Name),
                             City = new CityModel(s.Address.City.Id, s.Address.City.Name),
                         },
+                        IsActive = s.IsActive,
                     })
                     .Take(10)
                     .ToListAsync();
@@ -74,6 +76,7 @@ namespace BlazorApp.Api.Functions
 
             var now = DateTime.Now;
             var transportQuery = _dbContext.Set<Transport>()
+                .Where(t => t.IsActive)
                 .Where(t => !t.ExpiresOn.HasValue || t.ExpiresOn > now)
                 .Where(t => t.AdultSeats >= request.NumberOfAdults)
                 .Where(t => t.ChildSeats >= request.NumberOfChildren)
@@ -107,6 +110,7 @@ namespace BlazorApp.Api.Functions
                         City = new CityModel(t.Destination.City.Id, t.Destination.City.Name),
                     },
                     LeavesAt = t.ExpiresOn,
+                    IsActive = t.IsActive,
                 })
                 .Take(10)
                 .ToListAsync();
