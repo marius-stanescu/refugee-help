@@ -97,20 +97,15 @@
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
     private string[] startingPoints = new string[] { };
-    private IEnumerable<TimePeriod> timePeriods = new HashSet<TimePeriod> { };
-
-    protected override async Task OnInitializedAsync()
+    private IEnumerable<TimePeriod> timePeriods = new HashSet<TimePeriod>
     {
-        try
-        {
-            timePeriods = await Http.GetFromJsonAsync<HashSet<TimePeriod>>("/api/GetTimePeriods")
-                ?? new HashSet<TimePeriod> { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Perioadele nu au putut fi încărcate!", Severity.Error);
-        }
-    }
+        TimePeriod.OneToThreeDays,
+        TimePeriod.ThreeDaysToAWeek,
+        TimePeriod.OneToTwoWeeks,
+        TimePeriod.ThreeToFourWeeks,
+        TimePeriod.OneToTwoMonths,
+        TimePeriod.Indefinite,
+    };
 
     private async Task<IEnumerable<string>> SearchStartingPoint(string value)
     {
