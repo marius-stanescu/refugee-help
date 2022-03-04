@@ -48,19 +48,9 @@ namespace BlazorApp.Shared
                 get
                 {
 
-                    if (ExpiryTime.HasValue)
+                    if (ExpiryDate.HasValue && ExpiryTime.HasValue)
                     {
-                        if (ExpiryDate.HasValue)
-                        {
-                            return ExpiryDate.Value.Add(ExpiryTime.Value);
-                        }
-
-                        return DateTime.Today.Add(ExpiryTime.Value);
-                    }
-
-                    if (ExpiryDate.HasValue)
-                    {
-                        return ExpiryDate.Value.AddDays(1);
+                        return ExpiryDate.Value.Add(ExpiryTime.Value);
                     }
 
                     return null;
@@ -142,6 +132,16 @@ namespace BlazorApp.Shared
                 .GreaterThan(0)
                 .When(x => x.Transport.IsOffered && x.Transport.AdultSeats == 0)
                 .WithMessage("Nr. de scaune pentru copii este necesar!");
+
+            RuleFor(x => x.Transport.ExpiryDate)
+                .NotEmpty()
+                .When(x => x.Transport.IsOffered && x.Transport.ExpiryTime.HasValue)
+                .WithMessage("Data plecării este necesară!");
+
+            RuleFor(x => x.Transport.ExpiryTime)
+                .NotEmpty()
+                .When(x => x.Transport.IsOffered && x.Transport.ExpiryDate.HasValue)
+                .WithMessage("Ora plecării este necesară!");
 
             RuleFor(x => x.Shelter.IsOffered)
                 .Must(isOffered => isOffered)

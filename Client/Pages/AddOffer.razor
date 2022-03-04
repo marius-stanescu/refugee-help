@@ -32,9 +32,10 @@
                 <MudNumericField @bind-Value="@request.Transport.ChildSeats" For="@(() => request.Transport.ChildSeats)"
                                  Label="Nr. scaune copil" Min="0" Max="100" Class="mt-4" />
                 <MudDatePicker @bind-Date="request.Transport.ExpiryDate" For="@(() => request.Transport.ExpiryDate)"
-                               Label="Data plecării" DateFormat="dd.MM.yyyy" Class="mt-4" />
+                               PickerVariant="PickerVariant.Dialog" DateFormat="dd.MM.yyyy" DisableToolbar="true"
+                               Label="Data plecării" Color="Color.Secondary" Class="mt-4" />
                 <MudTimePicker @bind-Time="request.Transport.ExpiryTime" For="@(() => request.Transport.ExpiryTime)"
-                               Label="Ora plecării" Class="mt-4" />
+                               PickerVariant="PickerVariant.Dialog" Color="Color.Secondary" Label="Ora plecării" Class="mt-4" />
             </div>
         </div>
 

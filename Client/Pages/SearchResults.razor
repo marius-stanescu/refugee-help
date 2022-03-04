@@ -1,4 +1,4 @@
-﻿@page "/search-results"
+@page "/search-results"
 
 @using BlazorApp.Shared
 
@@ -16,37 +16,43 @@
                             <MudToggleIconButton @bind-Toggled="@transport.DisplayPhone"
                                              Icon="@Icons.Filled.Call" Color="Color.Primary" Size="Size.Large"
                                              ToggledIcon="@Icons.Filled.Call" ToggledColor="@Color.Error" ToggledSize="Size.Large" />
-                            <MudPopover Open="@transport.DisplayPhone" Fixed="true" Class="px-4 pt-4">
-                                <div class="d-flex flex-column">
-                                    <MudText Typo="Typo.h5" Class="pa-2">@transport.Phone</MudText>
-                                    <MudButton OnClick="@(() => { transport.DisplayPhone = false; })"
-                                           Variant="Variant.Text" StartIcon="@Icons.Filled.Close"
-                                           Color="Color.Error" Class="ml-auto mr-n3 mb-1">
-                                        Închide
-                                    </MudButton>
-                                </div>
+                            <MudPopover Open="@transport.DisplayPhone" Fixed="true" Elevation="0" Class="pa-4">
+                                <MudText Typo="Typo.h5" Color="Color.Primary">@transport.Phone</MudText>
                             </MudPopover>
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
                         <div>
-                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline" />
-                            <MudText Typo="Typo.body1" Class="d-inline ml-2">
-                                Adresa: @transport.Destination.City.Name, @transport.Destination.Region.Name
+                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline-block pb-1" />
+                            <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                Destinație: @transport.Destination.City.Name, @transport.Destination.Region.Name
                             </MudText>
                         </div>
-                        <div>
-                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline" />
-                            <MudText Typo="Typo.body1" Class="d-inline ml-2">
+                        <div class="mt-2">
+                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline-block pb-1" />
+                            <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
                                 Număr persoane: adulți - @transport.AdultSeats, copii - @transport.ChildSeats
                             </MudText>
                         </div>
-                        <div hidden="@(!transport.LeavesAt.HasValue)">
-                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Class="d-inline" />
-                            <MudText Typo="Typo.body1" Class="d-inline ml-2">
-                                Pleacă la: @($"{transport.LeavesAt:HH:mm - dd.MM.yyyy}")
-                            </MudText>
-                        </div>
+                        @if (transport.LeavesAt.HasValue)
+                        {
+                            <div class="mt-2">
+                                @if (transport.LeavesAt.Value.Date == DateTime.Today)
+                                {
+                                    <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Color="Color.Warning" Class="d-inline-block pb-1" />
+                                    <MudText Typo="Typo.body1" Color="Color.Warning" Class="d-inline-block ml-2">
+                                        Pleacă la: @($"{transport.LeavesAt:HH:mm - dd.MM.yyyy}")
+                                    </MudText>
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                    <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                        Pleacă la: @($"{transport.LeavesAt:HH:mm - dd.MM.yyyy}")
+                                    </MudText>
+                                }
+                            </div>
+                        }
                     </MudCardContent>
                     <MudCardActions Class="d-flex justify-space-between">
                         <div>
@@ -68,78 +74,74 @@
             <div hidden="@(Result.TransportResults.Count != 0)">
                 <MudText>
                     Nu am găsit rezultate.<br />
-                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/">refugees.ro</MudLink>.
+                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
                 </MudText>
             </div>
         </MudTabPanel>
-        <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home">
-            @foreach (var shelter in Result.ShelterResults)
-            {
-                <MudCard Class="mb-6 pl-2 pb-2 pr-2">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h5">@shelter.Name</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudToggleIconButton @bind-Toggled="@shelter.DisplayPhone"
+        @if (Result.SearchedForShelter)
+        {
+            <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home">
+                @foreach (var shelter in Result.ShelterResults)
+                {
+                    <MudCard Class="mb-6 pl-2 pb-2 pr-2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5">@shelter.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudToggleIconButton @bind-Toggled="@shelter.DisplayPhone"
                                              Icon="@Icons.Filled.Call" Color="Color.Primary" Size="Size.Large"
                                              ToggledIcon="@Icons.Filled.Call" ToggledColor="@Color.Error" ToggledSize="Size.Large" />
-                            <MudPopover Open="@shelter.DisplayPhone" Fixed="true" Class="px-4 pt-4">
-                                <div class="d-flex flex-column">
-                                    <MudText Typo="Typo.h5" Class="pa-2">@shelter.Phone</MudText>
-                                    <MudButton OnClick="@(() => { shelter.DisplayPhone = false; })"
-                                           Variant="Variant.Text" StartIcon="@Icons.Filled.Close"
-                                           Color="Color.Error" Class="ml-auto mr-n3 mb-1">
-                                        Închide
-                                    </MudButton>
-                                </div>
-                            </MudPopover>
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <div class="d-flex justify-start">
-                            <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" />
-                            <MudText Typo="Typo.body1" Class="ml-2">
-                                Adresa: @shelter.Address.City.Name, @shelter.Address.Region.Name
-                            </MudText>
-                        </div>
-                        <div class="d-flex justify-start">
-                            <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" />
-                            <MudText Typo="Typo.body1" Class="ml-2">
-                                Număr persoane: adulți - @shelter.AdultCapacity, copii - @shelter.ChildrenCapacity
-                            </MudText>
-                        </div>
-                        <div class="d-flex justify-start">
-                            <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" />
-                            <MudText Typo="Typo.body1" Class="ml-2">
-                                Perioadă: @shelter.Period.Text()
-                            </MudText>
-                        </div>
-                    </MudCardContent>
-                    <MudCardActions Class="d-flex justify-space-between">
-                        <div>
-                            <MudButton Variant="Variant.Filled" Color="Color.Success"
+                                <MudPopover Open="@shelter.DisplayPhone" Fixed="true" Elevation="0" Class="pa-4">
+                                    <MudText Typo="Typo.h5" Color="Color.Primary">@shelter.Phone</MudText>
+                                </MudPopover>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <div>
+                                <MudIcon Icon="@Icons.Filled.LocationCity" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                    Adresa: @shelter.Address.City.Name, @shelter.Address.Region.Name
+                                </MudText>
+                            </div>
+                            <div class="mt-2">
+                                <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                    Număr persoane: adulți - @shelter.AdultCapacity, copii - @shelter.ChildrenCapacity
+                                </MudText>
+                            </div>
+                            <div class="mt-2">
+                                <MudIcon Icon="@Icons.Filled.AccessTime" Size="Size.Medium" Class="d-inline-block pb-1" />
+                                <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
+                                    Perioadă: @shelter.Period.Text()
+                                </MudText>
+                            </div>
+                        </MudCardContent>
+                        <MudCardActions Class="d-flex justify-space-between">
+                            <div>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success"
                                    StartIcon="@Icons.Filled.Check" DisableElevation="true">
-                                Rezolvat
-                            </MudButton>
-                        </div>
-                        <div>
-                            <MudButton Variant="Variant.Text" Color="Color.Error"
+                                    Rezolvat
+                                </MudButton>
+                            </div>
+                            <div>
+                                <MudButton Variant="Variant.Text" Color="Color.Error"
                                    StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
-                                Nu mai e valabil
-                            </MudButton>
-                        </div>
-                    </MudCardActions>
-                </MudCard>
-            }
+                                    Nu mai e valabil
+                                </MudButton>
+                            </div>
+                        </MudCardActions>
+                    </MudCard>
+                }
 
-            <div hidden="@(Result.ShelterResults.Count != 0)">
-                <MudText>
-                    Nu am găsit rezultate.<br />
-                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/">refugees.ro</MudLink>.
-                </MudText>
-            </div>
-        </MudTabPanel>
+                <div hidden="@(Result.ShelterResults.Count != 0)">
+                    <MudText>
+                        Nu am găsit rezultate.<br />
+                        Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
+                    </MudText>
+                </div>
+            </MudTabPanel>
+        }
     </MudTabs>
 </div>
 

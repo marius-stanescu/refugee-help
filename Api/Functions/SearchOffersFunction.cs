@@ -40,17 +40,20 @@ namespace BlazorApp.Api.Functions
                     shelterQuery = shelterQuery.Where(s => s.AllowsPets);
                 }
 
-                if (request.Address?.Region is not null)
+                if (request.Address?.Region?.Id > 0)
                 {
                     shelterQuery = shelterQuery.Where(s => s.Address.RegionId == request.Address.Region.Id);
                 }
 
-                if (request.Address?.City is not null)
+                if (request.Address?.City?.Id > 0)
                 {
                     shelterQuery = shelterQuery.Where(s => s.Address.CityId == request.Address.City.Id);
                 }
 
+                result.SearchedForShelter = true;
                 result.ShelterResults = await shelterQuery
+                    .OrderBy(s => s.MaxPeriodInDays - periodInDays)
+                    .ThenBy(s => s.AdultCapacity - request.NumberOfAdults + s.ChildrenCapacity - request.NumberOfChildren)
                     .Select(s => new SearchOffersResult.ShelterResult
                     {
                         Id = s.Id,
@@ -65,48 +68,48 @@ namespace BlazorApp.Api.Functions
                             City = new CityModel(s.Address.City.Id, s.Address.City.Name),
                         },
                     })
-                    .Take(5)
+                    .Take(10)
                     .ToListAsync();
             }
 
-            if (request.Transport.IsNeeded)
+            var now = DateTime.Now;
+            var transportQuery = _dbContext.Set<Transport>()
+                .Where(t => !t.ExpiresOn.HasValue || t.ExpiresOn > now)
+                .Where(t => t.AdultSeats >= request.NumberOfAdults)
+                .Where(t => t.ChildSeats >= request.NumberOfChildren)
+                .Where(t => t.StartingPoint == request.StartingPoint)
+                .AsQueryable();
+
+            if (request.Address?.Region?.Id > 0)
             {
-                var now = DateTime.Now;
-                var transportQuery = _dbContext.Set<Transport>()
-                    .Where(t => !t.ExpiresOn.HasValue || t.ExpiresOn > now)
-                    .Where(t => t.AdultSeats >= request.NumberOfAdults)
-                    .Where(t => t.ChildSeats >= request.NumberOfChildren)
-                    .Where(t => t.StartingPoint == request.StartingPoint)
-                    .AsQueryable();
-
-                if (request.Address?.Region is not null)
-                {
-                    transportQuery = transportQuery.Where(s => s.Destination.RegionId == request.Address.Region.Id);
-                }
-
-                if (request.Address?.City is not null)
-                {
-                    transportQuery = transportQuery.Where(s => s.Destination.CityId == request.Address.City.Id);
-                }
-
-                result.TransportResults = await transportQuery
-                    .Select(t => new SearchOffersResult.TransportResult
-                    {
-                        Id = t.Id,
-                        Name = t.ContactPerson.Name,
-                        Phone = t.ContactPerson.Phone,
-                        AdultSeats = t.AdultSeats,
-                        ChildSeats = t.ChildSeats,
-                        Destination = new AddressModel
-                        {
-                            Region = new RegionModel(t.Destination.Region.Id, t.Destination.Region.Name),
-                            City = new CityModel(t.Destination.City.Id, t.Destination.City.Name),
-                        },
-                        LeavesAt = t.ExpiresOn,
-                    })
-                    .Take(5)
-                    .ToListAsync();
+                transportQuery = transportQuery.Where(s => s.Destination.RegionId == request.Address.Region.Id);
             }
+
+            if (request.Address?.City?.Id > 0)
+            {
+                transportQuery = transportQuery.Where(s => s.Destination.CityId == request.Address.City.Id);
+            }
+
+            result.TransportResults = await transportQuery
+                .OrderBy(t => !t.ExpiresOn.HasValue)
+                .ThenBy(t => t.ExpiresOn)
+                .ThenBy(t => t.AdultSeats - request.NumberOfAdults + t.ChildSeats - request.NumberOfChildren)
+                .Select(t => new SearchOffersResult.TransportResult
+                {
+                    Id = t.Id,
+                    Name = t.ContactPerson.Name,
+                    Phone = t.ContactPerson.Phone,
+                    AdultSeats = t.AdultSeats,
+                    ChildSeats = t.ChildSeats,
+                    Destination = new AddressModel
+                    {
+                        Region = new RegionModel(t.Destination.Region.Id, t.Destination.Region.Name),
+                        City = new CityModel(t.Destination.City.Id, t.Destination.City.Name),
+                    },
+                    LeavesAt = t.ExpiresOn,
+                })
+                .Take(10)
+                .ToListAsync();
 
             return new OkObjectResult(result);
         }

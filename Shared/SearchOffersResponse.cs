@@ -9,14 +9,13 @@ namespace BlazorApp.Shared
         {
             ShelterResults = new List<ShelterResult>();
             TransportResults = new List<TransportResult>();
-            TransportAndShelterResults = new List<TransportAndShelterResult>();
         }
+
+        public bool SearchedForShelter { get; set; }
 
         public ICollection<ShelterResult> ShelterResults { get; set; }
 
         public ICollection<TransportResult> TransportResults { get; set; }
-
-        public ICollection<TransportAndShelterResult> TransportAndShelterResults { get; set; }
 
         public class ShelterResult
         {
@@ -52,25 +51,6 @@ namespace BlazorApp.Shared
             public int ChildSeats { get; set; }
 
             public AddressModel Destination { get; set; }
-
-            public DateTime? LeavesAt { get; set; }
-        }
-
-        public class TransportAndShelterResult
-        {
-            public Guid Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string Phone { get; set; }
-
-            public bool DisplayPhone { get; set; }
-
-            public int AdultCapacity { get; set; }
-
-            public int ChildrenCapacity { get; set; }
-
-            public AddressModel Address { get; set; }
 
             public DateTime? LeavesAt { get; set; }
         }
