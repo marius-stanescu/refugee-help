@@ -1,4 +1,3 @@
-﻿using System;
 using BlazorApp.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,6 +9,9 @@ namespace BlazorApp.Api.Data
         public void Configure(EntityTypeBuilder<Transport> builder)
         {
             builder.HasKey(t => t.Id);
+
+            builder.Property(t => t.AdultCapacity).HasColumnName("AdultSeats");
+            builder.Property(t => t.ChildrenCapacity).HasColumnName("ChildSeats");
 
             builder.OwnsOne(t => t.ContactPerson, b =>
             {

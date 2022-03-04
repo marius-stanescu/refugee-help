@@ -78,8 +78,8 @@ namespace BlazorApp.Api.Functions
             var transportQuery = _dbContext.Set<Transport>()
                 .Where(t => t.IsActive)
                 .Where(t => !t.ExpiresOn.HasValue || t.ExpiresOn > now)
-                .Where(t => t.AdultSeats >= request.NumberOfAdults)
-                .Where(t => t.ChildSeats >= request.NumberOfChildren)
+                .Where(t => t.AdultCapacity >= request.NumberOfAdults)
+                .Where(t => t.ChildrenCapacity >= request.NumberOfChildren)
                 .Where(t => t.StartingPoint == request.StartingPoint)
                 .AsQueryable();
 
@@ -96,14 +96,14 @@ namespace BlazorApp.Api.Functions
             result.TransportResults = await transportQuery
                 .OrderBy(t => !t.ExpiresOn.HasValue)
                 .ThenBy(t => t.ExpiresOn)
-                .ThenBy(t => t.AdultSeats - request.NumberOfAdults + t.ChildSeats - request.NumberOfChildren)
+                .ThenBy(t => t.AdultCapacity - request.NumberOfAdults + t.ChildrenCapacity - request.NumberOfChildren)
                 .Select(t => new SearchOffersResult.TransportResult
                 {
                     Id = t.Id,
                     Name = t.ContactPerson.Name,
                     Phone = t.ContactPerson.Phone,
-                    AdultSeats = t.AdultSeats,
-                    ChildSeats = t.ChildSeats,
+                    AdultSeats = t.AdultCapacity,
+                    ChildSeats = t.ChildrenCapacity,
                     Destination = new AddressModel
                     {
                         Region = new RegionModel(t.Destination.Region.Id, t.Destination.Region.Name),
