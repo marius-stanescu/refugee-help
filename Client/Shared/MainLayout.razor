@@ -6,8 +6,10 @@
 
 <MudLayout>
     <MudAppBar Elevation="0" Style="@($"border-bottom: 5px solid {Ukraine.Palette.Secondary};")">
-        <MudIconButton Link="/" Icon="@Icons.Filled.Home" Variant="Variant.Filled"
-                       Color="Color.Secondary" Size="Size.Large" DisableElevation="true" />
+        <MudButton Link="/" Variant="Variant.Text" Size="Size.Large" Color="Color.Secondary" DisableElevation="true">
+            <MudImage Src="images/logo.png" Alt="Logo" Elevation="0" Class="rounded-lg mr-4" Height="44" />
+            Ajutor refugiați
+        </MudButton>
     </MudAppBar>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Medium">
@@ -21,8 +23,8 @@
     {
         Palette = new Palette()
         {
-            Primary = "#00509d",
-            Secondary = "#fdc500",
+            Primary = "#0057B8",
+            Secondary = "#FFD700",
             Tertiary = "#00296B",
             Success = "#008712",
             AppbarBackground = "#00509d",
