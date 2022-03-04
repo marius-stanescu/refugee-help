@@ -7,6 +7,7 @@ namespace BlazorApp.Api.Domain
         protected OfferBase()
         {
             Id = Guid.NewGuid();
+            CreatedOnUtc = DateTime.UtcNow;
         }
 
         public Guid Id { get; private set; }
@@ -17,8 +18,19 @@ namespace BlazorApp.Api.Domain
 
         public int ChildrenCapacity { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; private set; } = true;
 
-        public string DeactivationReason { get; set; }
+        public string DeactivationReason { get; private set; }
+
+        public DateTime CreatedOnUtc { get; private set; }
+
+        public DateTime? DeactivatedOnUtc { get; private set; }
+
+        public void Deactivate(string reason)
+        {
+            IsActive = false;
+            DeactivationReason = reason;
+            DeactivatedOnUtc = DateTime.UtcNow;
+        }
     }
 }

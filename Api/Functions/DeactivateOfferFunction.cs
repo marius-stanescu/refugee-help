@@ -26,8 +26,7 @@ namespace BlazorApp.Api.Functions
 
             if (transport is not null)
             {
-                transport.IsActive = false;
-                transport.DeactivationReason = request.Reason;
+                transport.Deactivate(request.Reason);
             }
 
             var shelter = _dbContext.Set<Shelter>()
@@ -35,8 +34,7 @@ namespace BlazorApp.Api.Functions
 
             if (shelter is not null)
             {
-                shelter.IsActive = false;
-                shelter.DeactivationReason = request.Reason;
+                shelter.Deactivate(request.Reason);
             }
 
             _dbContext.SaveChanges();

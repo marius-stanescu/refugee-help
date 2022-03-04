@@ -1,4 +1,4 @@
-using BlazorApp.Api.Domain;
+﻿using BlazorApp.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +15,7 @@ namespace BlazorApp.Api.Data
 
             builder.OwnsOne(t => t.ContactPerson, b =>
             {
-                b.WithOwner().HasForeignKey("ShelterId");
+                b.WithOwner().HasForeignKey("TransportId");
 
                 b.Property(cp => cp.Name).IsRequired();
                 b.Property(cp => cp.Phone).IsRequired();
