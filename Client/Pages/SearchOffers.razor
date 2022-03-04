@@ -1,6 +1,4 @@
-﻿@page "/guide-guests"
-
-@using BlazorApp.Shared
+﻿@page "/search-offers"
 
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -89,25 +87,20 @@
     private string[] errors = { };
     private MudForm form = new MudForm();
     private SearchOffersRequest request = new SearchOffersRequest();
-    private GuideGuestsRequestValidator requestValidator = new GuideGuestsRequestValidator();
-    private IEnumerable<TimePeriod> timePeriods = new HashSet<TimePeriod> { };
+    private SearchOffersRequestValidator requestValidator = new SearchOffersRequestValidator();
+    private IEnumerable<TimePeriod> timePeriods = new HashSet<TimePeriod>
+    {
+        TimePeriod.OneToThreeDays,
+        TimePeriod.ThreeDaysToAWeek,
+        TimePeriod.OneToTwoWeeks,
+        TimePeriod.ThreeToFourWeeks,
+        TimePeriod.OneToTwoMonths,
+        TimePeriod.Indefinite,
+    };
 
     private bool requestStarted = false;
     private bool requestCompleted = false;
     private SearchOffersResult searchResult = new SearchOffersResult();
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            timePeriods = await Http.GetFromJsonAsync<HashSet<TimePeriod>>("/api/GetTimePeriods")
-                ?? new HashSet<TimePeriod> { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Perioadele nu au putut fi încărcate!", Severity.Error);
-        }
-    }
 
     private async Task<IEnumerable<string>> SearchStartingPoint(string value)
     {

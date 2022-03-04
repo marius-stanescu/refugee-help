@@ -1,0 +1,62 @@
+﻿@using MudBlazor
+@using BlazorApp.Shared
+
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Filled.Cancel" Class="mr-2" />
+            Dezactivare ofertă
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>Ești sigur că oferta nu mai este disponibilă?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" StartIcon="@Icons.Filled.ArrowBackIosNew">
+            Înapoi
+        </MudButton>
+        <MudButton OnClick="@(async () => await Submit())" Variant="Variant.Filled"
+                   Color="@Color.Error" DisableElevation="true">
+            Da. Dezactivează oferta!
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public SearchOffersResult.OfferResultBase? Offer { get; set; }
+
+    async Task Submit()
+    {
+        try
+        {
+            if (Offer?.Id is null)
+            {
+                Snackbar.Add("Informația despre disponbilitate nu a putut fi salvată!", Severity.Error);
+                return;
+            }
+
+            var request = new DeactivateOfferRequest(Offer.Id, "No longer available");
+            await Http.PostAsJsonAsync($"/api/DeactivateOffer", request);
+
+            Offer.IsActive = false;
+            Snackbar.Add("Oferta a fost dezactivată!", Severity.Success);
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        catch
+        {
+            Snackbar.Add("Informația despre disponbilitate nu a putut fi salvată!", Severity.Error);
+        }
+    }
+
+    void Cancel() => MudDialog?.Cancel();
+
+}
+

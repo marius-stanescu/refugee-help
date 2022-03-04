@@ -4,6 +4,7 @@ using BlazorApp.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp.Api.Migrations
 {
     [DbContext(typeof(RefugeesDbContext))]
-    partial class RefugeesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220304090248_Add_IsActive_and_DeactivatioReason_properties")]
+    partial class Add_IsActive_and_DeactivatioReason_properties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,12 +100,6 @@ namespace BlazorApp.Api.Migrations
                     b.Property<int>("ChildrenCapacity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeactivatedOnUtc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("DeactivationReason")
                         .HasColumnType("nvarchar(max)");
 
@@ -129,19 +125,11 @@ namespace BlazorApp.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AdultCapacity")
-                        .HasColumnType("int")
-                        .HasColumnName("AdultSeats");
+                    b.Property<int>("AdultSeats")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ChildrenCapacity")
-                        .HasColumnType("int")
-                        .HasColumnName("ChildSeats");
-
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeactivatedOnUtc")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("ChildSeats")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeactivationReason")
                         .HasColumnType("nvarchar(max)");
@@ -242,7 +230,7 @@ namespace BlazorApp.Api.Migrations
                 {
                     b.OwnsOne("BlazorApp.Api.Domain.ContactPerson", "ContactPerson", b1 =>
                         {
-                            b1.Property<Guid>("TransportId")
+                            b1.Property<Guid>("ShelterId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("Name")
@@ -253,12 +241,12 @@ namespace BlazorApp.Api.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("TransportId");
+                            b1.HasKey("ShelterId");
 
                             b1.ToTable("Transport");
 
                             b1.WithOwner()
-                                .HasForeignKey("TransportId");
+                                .HasForeignKey("ShelterId");
                         });
 
                     b.OwnsOne("BlazorApp.Api.Domain.Address", "Destination", b1 =>

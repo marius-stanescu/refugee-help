@@ -1,11 +1,13 @@
 @page "/search-results"
 
-@using BlazorApp.Shared
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <div class="mt-5">
     <MudTabs ApplyEffectsToContainer="true" PanelClass="pa-6" Elevation="1">
         <MudTabPanel Text="Transport" Icon="@Icons.Filled.TimeToLeave">
-            @foreach (var transport in Result.TransportResults)
+            @foreach (var transport in Result.TransportResults.Where(t => t.IsActive))
             {
                 <MudCard Class="mb-6 pl-2 pb-2 pr-2">
                     <MudCardHeader>
@@ -56,14 +58,14 @@
                     </MudCardContent>
                     <MudCardActions Class="d-flex justify-space-between">
                         <div>
-                            <MudButton Variant="Variant.Filled" Color="Color.Success"
+                            @*<MudButton Variant="Variant.Filled" Color="Color.Success"
                                    StartIcon="@Icons.Filled.Check" DisableElevation="true">
                                 Rezolvat
-                            </MudButton>
+                            </MudButton>*@
                         </div>
                         <div>
-                            <MudButton Variant="Variant.Text" Color="Color.Error"
-                                   StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
+                            <MudButton OnClick="@(() => DeactivateOffer(transport))" Variant="Variant.Text"
+                                   Color="Color.Error" StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
                                 Nu mai e valabil
                             </MudButton>
                         </div>
@@ -81,7 +83,7 @@
         @if (Result.SearchedForShelter)
         {
             <MudTabPanel Text="Adăpost" Icon="@Icons.Filled.Home">
-                @foreach (var shelter in Result.ShelterResults)
+                @foreach (var shelter in Result.ShelterResults.Where(s => s.IsActive))
                 {
                     <MudCard Class="mb-6 pl-2 pb-2 pr-2">
                         <MudCardHeader>
@@ -119,14 +121,14 @@
                         </MudCardContent>
                         <MudCardActions Class="d-flex justify-space-between">
                             <div>
-                                <MudButton Variant="Variant.Filled" Color="Color.Success"
+                                @*<MudButton Variant="Variant.Filled" Color="Color.Success"
                                    StartIcon="@Icons.Filled.Check" DisableElevation="true">
                                     Rezolvat
-                                </MudButton>
+                                </MudButton>*@
                             </div>
                             <div>
-                                <MudButton Variant="Variant.Text" Color="Color.Error"
-                                   StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
+                                <MudButton OnClick="@(() => DeactivateOffer(shelter))" Variant="Variant.Text"
+                                   Color="Color.Error" StartIcon="@Icons.Filled.Cancel" DisableElevation="true">
                                     Nu mai e valabil
                                 </MudButton>
                             </div>
@@ -151,5 +153,15 @@
     public SearchOffersResult Result { get; set; } = new SearchOffersResult();
 
     public bool _isOpen;
+
+    private void DeactivateOffer(SearchOffersResult.OfferResultBase offer)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Offer", offer);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+
+        DialogService.Show<DeactivateOfferDialog>("Dezactivare ofertă", parameters, options);
+    }
 
 }

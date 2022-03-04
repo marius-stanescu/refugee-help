@@ -35,8 +35,8 @@ namespace BlazorApp.Api.Functions
                         RegionId = request.Transport.Destination.Region.Id,
                         CityId = request.Transport.Destination.City.Id,
                     },
-                    AdultSeats = request.Transport.AdultSeats,
-                    ChildSeats = request.Transport.ChildSeats,
+                    AdultCapacity = request.Transport.AdultSeats,
+                    ChildrenCapacity = request.Transport.ChildSeats,
                     ExpiresOn = request.Transport.ExpiresOn,
                 };
 
