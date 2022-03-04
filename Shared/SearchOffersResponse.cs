@@ -17,7 +17,7 @@ namespace BlazorApp.Shared
 
         public ICollection<TransportResult> TransportResults { get; set; }
 
-        public class ShelterResult : BaseOfferResult
+        public class ShelterResult : OfferResultBase
         {
             public int AdultCapacity { get; set; }
 
@@ -28,7 +28,7 @@ namespace BlazorApp.Shared
             public AddressModel Address { get; set; }
         }
 
-        public class TransportResult : BaseOfferResult
+        public class TransportResult : OfferResultBase
         {
             public int AdultSeats { get; set; }
 
@@ -39,7 +39,7 @@ namespace BlazorApp.Shared
             public DateTime? LeavesAt { get; set; }
         }
 
-        public abstract class BaseOfferResult
+        public abstract class OfferResultBase
         {
             public Guid Id { get; set; }
 
