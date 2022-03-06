@@ -71,8 +71,20 @@ namespace BlazorApp.Api.Functions
                         stringBuilder.Append(char.ToUpper(c, CultureInfo.InvariantCulture));
                         break;
                     default:
-                        previousCharWasSeparator = false;
-                        stringBuilder.Append(c);
+                        if (c == '\\' || c == '/')
+                        {
+                            if (previousCharWasSeparator)
+                            {
+                                break;
+                            }
+                            stringBuilder.Append('_');
+                            previousCharWasSeparator = true;
+                        }
+                        else
+                        {
+                            previousCharWasSeparator = false;
+                            stringBuilder.Append(c);
+                        }
                         break;
                 }
             }

@@ -12,6 +12,12 @@ namespace BlazorApp.Api.Data
 
             builder.Property(t => t.AdultCapacity).HasColumnName("AdultSeats");
             builder.Property(t => t.ChildrenCapacity).HasColumnName("ChildSeats");
+            builder.Property(t => t.BorderId).HasDefaultValue(1);
+
+            builder.HasOne(t => t.Border)
+                .WithMany()
+                .HasForeignKey(t => t.BorderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.OwnsOne(t => t.ContactPerson, b =>
             {

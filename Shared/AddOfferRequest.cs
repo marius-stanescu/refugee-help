@@ -26,12 +26,13 @@ namespace BlazorApp.Shared
         {
             public TransportOfferModel()
             {
+                StartingPoint = new BorderModel();
                 Destination = new AddressModel();
             }
 
             public bool IsOffered { get; set; }
 
-            public string StartingPoint { get; set; }
+            public BorderModel StartingPoint { get; set; }
 
             public AddressModel Destination { get; set; }
 
@@ -98,7 +99,7 @@ namespace BlazorApp.Shared
                 .When(x => !x.Shelter.IsOffered)
                 .WithMessage("Oferta trebuie să includă transport, adăpost sau ambele!");
 
-            RuleFor(x => x.Transport.StartingPoint)
+            RuleFor(x => x.Transport.StartingPoint.Id)
                 .NotEmpty()
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Locul de plecare este necesar!");

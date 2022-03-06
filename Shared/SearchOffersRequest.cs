@@ -18,7 +18,7 @@ namespace BlazorApp.Shared
 
         public int NumberOfChildren { get; set; }
 
-        public string StartingPoint { get; set; }
+        public BorderModel StartingPoint { get; set; }
 
         public ShelterModel Shelter { get; set; }
 

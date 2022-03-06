@@ -22,12 +22,12 @@
 
         <div class="mt-6">
             <MudAutocomplete @bind-Value="request.StartingPoint" For="@(() => request.StartingPoint)"
-                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint"
+                             ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchBorder" ToStringFunc="@(x => x.Name)"
                              Label="Loc de plecare" Class="mt-4" />
-            <MudAutocomplete @bind-Value="request.Address.Region" T="RegionModel" For="@(() => request.Address.Region)"
+            <MudAutocomplete @bind-Value="request.Address.Region" For="@(() => request.Address.Region)"
                              ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
                              Label="Destinație (județ)" Class="mt-4" />
-            <MudAutocomplete @bind-Value="request.Address.City" T="CityModel" For="@(() => request.Address.City)"
+            <MudAutocomplete @bind-Value="request.Address.City" For="@(() => request.Address.City)"
                              ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchCity" ToStringFunc=@(x => x.Name)
                              Label="Destinație (oraș)" Class="mt-4" Disabled=@(request.Address.Region.Id == 0) />
         </div>
@@ -102,36 +102,23 @@
     private bool requestCompleted = false;
     private SearchOffersResult searchResult = new SearchOffersResult();
 
-    private async Task<IEnumerable<string>> SearchStartingPoint(string value)
+    private Task<IEnumerable<BorderModel>> SearchBorder(string value)
     {
-        try
-        {
-            var startingPoints = await Http.GetFromJsonAsync<string[]>("/api/GetStartingPoints") ?? new string[] { };
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return startingPoints;
-            }
-
-            return startingPoints.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Locurile de plecare nu au putut fi încărcate!", Severity.Error);
-            return new string[] { };
-        }
+        return Task.FromResult(
+            Cache.Borders.Where(b => b.NormalizedName.Contains(value.LookupNormalize())));
     }
 
-    private async Task<IEnumerable<RegionModel>> SearchRegion(string value)
+    private Task<IEnumerable<RegionModel>> SearchRegion(string value)
     {
-        return Cache.Regions.Where(r => r.NormalizedName.Contains(value.LookupNormalize()));
+        return Task.FromResult(
+            Cache.Regions.Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
     }
 
-    private async Task<IEnumerable<CityModel>> SearchCity(string value)
+    private Task<IEnumerable<CityModel>> SearchCity(string value)
     {
-        return Cache.Cities
+        return Task.FromResult(Cache.Cities
             .Where(c => c .RegionId == request.Address.Region.Id)
-            .Where(r => r.NormalizedName.Contains(value.LookupNormalize()));
+            .Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
     }
 
     private async Task Submit()
@@ -142,8 +129,15 @@
         {
             requestStarted = true;
 
-            var response = await Http.PostAsJsonAsync("/api/SearchOffers", request);
-            searchResult = (await response.Content.ReadFromJsonAsync<SearchOffersResult>()) ?? new SearchOffersResult();
+            try
+            {
+                var response = await Http.PostAsJsonAsync("/api/SearchOffers", request);
+                searchResult = (await response.Content.ReadFromJsonAsync<SearchOffersResult>()) ?? new SearchOffersResult();
+            }
+            catch
+            {
+                Snackbar.Add("A avut loc o eroare neașteptată.", Severity.Error);
+            }
 
             requestCompleted = true;
         }

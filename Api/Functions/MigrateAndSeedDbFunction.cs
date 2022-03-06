@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using BlazorApp.Api.Data;
 using BlazorApp.Api.Domain;
+using BlazorApp.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -28,25 +29,36 @@ public class MigrateAndSeedDbFunction
         ILogger log,
         ExecutionContext context)
     {
-        log.LogInformation($"SeedData function started at: {DateTime.Now}");
+        log.LogInformation($"Migrate and seed db function started at: {DateTime.Now}");
 
         try
         {
             _dbContext.Database.Migrate();
 
-            if (_dbContext.Set<City>().Any() || _dbContext.Set<Region>().Any())
+            if (!_dbContext.Set<Border>().Any())
             {
-                return;
+                var borders = Cache.Borders.Select(b => new Border
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    NormalizedName = b.NormalizedName,
+                });
+                _dbContext.AddRange(borders);
             }
 
-            var filePath = Path.Combine(context.FunctionAppDirectory + "\\Files\\RegionsAndCities.json");
-            var json = File.ReadAllText(filePath);
-            var regions = JsonConvert.DeserializeObject<List<Region>>(json);
+            if (!_dbContext.Set<City>().Any()
+                && !_dbContext.Set<Region>().Any())
+            {
+                var filePath = Path.Combine(context.FunctionAppDirectory + "\\Files\\RegionsAndCities.json");
+                var json = File.ReadAllText(filePath);
+                var regions = JsonConvert.DeserializeObject<List<Region>>(json);
 
-            _dbContext.AddRange(regions);
+                _dbContext.AddRange(regions);
+            }
+
             _dbContext.SaveChanges();
 
-            log.LogInformation($"SeedData function executed at: {DateTime.Now}");
+            log.LogInformation($"Migrate and seed db function executed at: {DateTime.Now}");
         }
         catch (Exception ex)
         {
