@@ -124,37 +124,14 @@
 
     private async Task<IEnumerable<RegionModel>> SearchRegion(string value)
     {
-        try
-        {
-            var regions = await Http.GetFromJsonAsync<IEnumerable<RegionModel>>("/api/GetRegions") ?? new RegionModel[] { };
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return regions;
-            }
-
-            return regions.Where(r => r.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Județele nu au putut fi încărcate!", Severity.Error);
-            return new RegionModel[] { };
-        }
+        return Cache.Regions.Where(r => r.NormalizedName.Contains(value.LookupNormalize()));
     }
 
     private async Task<IEnumerable<CityModel>> SearchCity(string value)
     {
-        try
-        {
-            var regionId = request.Address.Region.Id;
-            return await Http.GetFromJsonAsync<IEnumerable<CityModel>>($"/api/GetCities?regionId={regionId}&name={value}")
-                ?? new CityModel[] { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
-            return new CityModel[] { };
-        }
+        return Cache.Cities
+            .Where(c => c .RegionId == request.Address.Region.Id)
+            .Where(r => r.NormalizedName.Contains(value.LookupNormalize()));
     }
 
     private async Task Submit()
