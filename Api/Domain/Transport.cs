@@ -4,7 +4,9 @@ namespace BlazorApp.Api.Domain
 {
     public class Transport : OfferBase
     {
-        public string StartingPoint { get; set; }
+        public int BorderId { get; set; }
+
+        public Border Border { get; set; }
 
         public Address Destination { get; set; }
 

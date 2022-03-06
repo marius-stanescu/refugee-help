@@ -29,7 +29,7 @@ namespace BlazorApp.Api.Functions
                         Name = request.Name,
                         Phone = request.Phone,
                     },
-                    StartingPoint = request.Transport.StartingPoint,
+                    BorderId = request.Transport.StartingPoint.Id,
                     Destination = new Address
                     {
                         RegionId = request.Transport.Destination.Region.Id,

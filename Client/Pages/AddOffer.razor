@@ -18,11 +18,12 @@
                        Label="Transport" Color="Color.Primary" />
             <div hidden="@(!request.Transport.IsOffered)">
                 <MudAutocomplete @bind-Value="request.Transport.StartingPoint" For="@(() => request.Transport.StartingPoint)"
-                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchStartingPoint" Label="Loc de plecare" />
-                <MudAutocomplete @bind-Value="request.Transport.Destination.Region" T="RegionModel" For="@(() => request.Transport.Destination.Region)"
+                                 ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchBorder" ToStringFunc="@(x => x.Name)"
+                                 Label="Loc de plecare" />
+                <MudAutocomplete @bind-Value="request.Transport.Destination.Region" For="@(() => request.Transport.Destination.Region)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
                                  Label="Destinație (județ)" />
-                <MudAutocomplete @bind-Value="request.Transport.Destination.City" T="CityModel" For="@(() => request.Transport.Destination.City)"
+                <MudAutocomplete @bind-Value="request.Transport.Destination.City" For="@(() => request.Transport.Destination.City)"
                                  ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchTransportCity" ToStringFunc=@(x => x.Name)
                                  Label="Destinație (oraș)" Disabled=@(request.Transport.Destination.Region.Id == 0) />
                 <MudNumericField @bind-Value="request.Transport.AdultSeats" For="@(() => request.Transport.AdultSeats)"
@@ -42,10 +43,10 @@
                        Label="Adăpost" Color="Color.Primary" />
             <div hidden="@(!request.Shelter.IsOffered)">
                 <div hidden="@(request.Transport.IsOffered)">
-                    <MudAutocomplete @bind-Value="request.Shelter.Address.Region" T="RegionModel" For="@(() => request.Shelter.Address.Region)"
+                    <MudAutocomplete @bind-Value="request.Shelter.Address.Region" For="@(() => request.Shelter.Address.Region)"
                                      ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchRegion" ToStringFunc="@(x => x.Name)"
                                      Label="Județ" />
-                    <MudAutocomplete @bind-Value="request.Shelter.Address.City" T="CityModel" For="@(() => request.Shelter.Address.City)"
+                    <MudAutocomplete @bind-Value="request.Shelter.Address.City" For="@(() => request.Shelter.Address.City)"
                                      ResetValueOnEmptyText="@true" CoerceText="@true" SearchFunc="SearchShelterCity" ToStringFunc=@(x => x.Name)
                                      Label="Oraș" Disabled=@(request.Shelter.Address.Region.Id == 0) />
                 </div>
@@ -96,7 +97,6 @@
     private AddOfferRequest request = new AddOfferRequest();
     private AddOfferRequestValidator offerValidator = new AddOfferRequestValidator();
 
-    private string[] startingPoints = new string[] { };
     private IEnumerable<TimePeriod> timePeriods = new HashSet<TimePeriod>
     {
         TimePeriod.OneToThreeDays,
@@ -107,74 +107,30 @@
         TimePeriod.Indefinite,
     };
 
-    private async Task<IEnumerable<string>> SearchStartingPoint(string value)
+    private Task<IEnumerable<BorderModel>> SearchBorder(string value)
     {
-        try
-        {
-            var startingPoints = await Http.GetFromJsonAsync<string[]>("/api/GetStartingPoints") ?? new string[] { };
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return startingPoints;
-            }
-
-            return startingPoints.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Locurile de plecare nu au putut fi încărcate!", Severity.Error);
-            return new string[] { };
-        }
+        return Task.FromResult(
+            Cache.Borders.Where(b => b.NormalizedName.Contains(value.LookupNormalize())));
     }
 
-    private async Task<IEnumerable<RegionModel>> SearchRegion(string value)
+    private Task<IEnumerable<RegionModel>> SearchRegion(string value)
     {
-        try
-        {
-            var regions = await Http.GetFromJsonAsync<IEnumerable<RegionModel>>("/api/GetRegions") ?? new RegionModel[] { };
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return regions;
-            }
-
-            return regions.Where(r => r.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Județele nu au putut fi încărcate!", Severity.Error);
-            return new RegionModel[] { };
-        }
+        return Task.FromResult(
+            Cache.Regions.Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
     }
 
-    private async Task<IEnumerable<CityModel>> SearchTransportCity(string value)
+    private Task<IEnumerable<CityModel>> SearchTransportCity(string value)
     {
-        try
-        {
-            var regionId = request.Transport.Destination.Region.Id;
-            return await Http.GetFromJsonAsync<IEnumerable<CityModel>>($"/api/GetCities?regionId={regionId}&name={value}")
-                ?? new CityModel[] { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
-            return new CityModel[] { };
-        }
+        return Task.FromResult(Cache.Cities
+            .Where(c => c .RegionId == request.Transport.Destination.Region.Id)
+            .Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
     }
 
-    private async Task<IEnumerable<CityModel>> SearchShelterCity(string value)
+    private Task<IEnumerable<CityModel>> SearchShelterCity(string value)
     {
-        try
-        {
-            var regionId = request.Shelter.Address.Region.Id;
-            return await Http.GetFromJsonAsync<IEnumerable<CityModel>>($"/api/GetCities?regionId={regionId}&name={value}")
-                ?? new CityModel[] { };
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Orașele nu au putut fi încărcate!", Severity.Error);
-            return new CityModel[] { };
-        }
+        return Task.FromResult(Cache.Cities
+            .Where(c => c .RegionId == request.Shelter.Address.Region.Id)
+            .Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
     }
 
     private async Task Submit()

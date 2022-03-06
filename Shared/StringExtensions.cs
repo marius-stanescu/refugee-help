@@ -1,51 +1,22 @@
-﻿using System.Globalization;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
-using BlazorApp.Api.Data;
-using BlazorApp.Api.Domain;
-using BlazorApp.Shared;
-using Diacritics.Extensions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 
-namespace BlazorApp.Api.Functions
+namespace BlazorApp.Shared
 {
-    public class GetCitiesFunction
+    public static class StringExtensions
     {
-        private readonly RefugeesDbContext _dbContext;
-
-        public GetCitiesFunction(RefugeesDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        [FunctionName("GetCities")]
-        public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
-        {
-            var regionId = int.Parse(req.Query["regionId"]);
-            var normalizedName = LookupNormalize(req.Query["name"].ToString());
-            var cities = _dbContext.Set<City>()
-                .Where(c => c.RegionId == regionId)
-                .Where(c => c.NormalizedName.Contains(normalizedName))
-                .OrderByDescending(c => c.Population)
-                .Take(30)
-                .Select(r => new CityModel { Id = r.Id, Name = r.Name })
-                .ToList();
-
-            return new OkObjectResult(cities);
-        }
-
-        private static string LookupNormalize(string input)
+        public static string LookupNormalize(this string input)
         {
             if (input == null)
             {
                 return "";
             }
 
-            var inputWithoutDiacritics = input.RemoveDiacritics();
+            var inputWithoutDiacritics = input
+                .Replace("ă", "a").Replace("â", "a").Replace("ș", "s").Replace("ț", "t").Replace("î", "i")
+                .Replace("Ă", "A").Replace("Â", "A").Replace("Ș", "S").Replace("Ț", "T").Replace("Î", "I");
             var stringBuilder = new StringBuilder(inputWithoutDiacritics.Length);
             var previousCharWasSeparator = false;
 

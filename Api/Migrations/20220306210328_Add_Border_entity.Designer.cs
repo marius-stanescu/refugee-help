@@ -4,6 +4,7 @@ using BlazorApp.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp.Api.Migrations
 {
     [DbContext(typeof(RefugeesDbContext))]
-    partial class RefugeesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220306210328_Add_Border_entity")]
+    partial class Add_Border_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -461,7 +463,9 @@ namespace BlazorApp.Api.Migrations
                         .HasColumnName("AdultSeats");
 
                     b.Property<int>("BorderId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("ChildrenCapacity")
                         .HasColumnType("int")

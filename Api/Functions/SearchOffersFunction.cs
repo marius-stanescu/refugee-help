@@ -80,8 +80,12 @@ namespace BlazorApp.Api.Functions
                 .Where(t => !t.ExpiresOn.HasValue || t.ExpiresOn > now)
                 .Where(t => t.AdultCapacity >= request.NumberOfAdults)
                 .Where(t => t.ChildrenCapacity >= request.NumberOfChildren)
-                .Where(t => t.StartingPoint == request.StartingPoint)
                 .AsQueryable();
+
+            if (request.StartingPoint?.Id > 0)
+            {
+                transportQuery = transportQuery.Where(t => t.BorderId == request.StartingPoint.Id);
+            }
 
             if (request.Address?.Region?.Id > 0)
             {
