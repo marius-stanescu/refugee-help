@@ -4,6 +4,7 @@ using BlazorApp.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp.Api.Migrations
 {
     [DbContext(typeof(RefugeesDbContext))]
-    partial class RefugeesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220306210758_Remove_BorderId_default_value")]
+    partial class Remove_BorderId_default_value
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
