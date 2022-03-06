@@ -99,18 +99,18 @@ namespace BlazorApp.Shared
                 .When(x => !x.Shelter.IsOffered)
                 .WithMessage("Oferta trebuie să includă transport, adăpost sau ambele!");
 
-            RuleFor(x => x.Transport.StartingPoint.Id)
-                .NotEmpty()
+            RuleFor(x => x.Transport.StartingPoint)
+                .Must(x => x?.Id > 0)
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Locul de plecare este necesar!");
 
-            RuleFor(x => x.Transport.Destination.Region.Id)
-                .NotEmpty()
+            RuleFor(x => x.Transport.Destination.Region)
+                .Must(x => x?.Id > 0)
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Destinația este necesară!");
 
-            RuleFor(x => x.Transport.Destination.City.Id)
-                .NotEmpty()
+            RuleFor(x => x.Transport.Destination.City)
+                .Must(x => x?.Id > 0)
                 .When(x => x.Transport.IsOffered)
                 .WithMessage("Destinația este necesară!");
 
@@ -149,13 +149,13 @@ namespace BlazorApp.Shared
                 .When(x => !x.Transport.IsOffered)
                 .WithMessage("Oferta trebuie să includă transport, adăpost sau ambele!");
 
-            RuleFor(x => x.Shelter.Address.Region.Id)
-                .NotEmpty()
+            RuleFor(x => x.Shelter.Address.Region)
+                .Must(x => x?.Id > 0)
                 .When(x => x.Shelter.IsOffered && !x.Transport.IsOffered)
                 .WithMessage("Județul este necesar!");
 
-            RuleFor(x => x.Shelter.Address.City.Id)
-                .NotEmpty()
+            RuleFor(x => x.Shelter.Address.City)
+                .Must(x => x?.Id > 0)
                 .When(x => x.Shelter.IsOffered && !x.Transport.IsOffered)
                 .WithMessage("Orașul este necesar!");
 

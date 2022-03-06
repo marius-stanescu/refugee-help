@@ -58,7 +58,7 @@ namespace BlazorApp.Shared
                 .WithMessage("Nr. de adulți sau copii este necesar!");
 
             RuleFor(x => x.StartingPoint)
-                .NotEmpty()
+                .Must(x => x?.Id > 0)
                 .WithMessage("Locul de plecare este necesar!");
 
             RuleFor(x => x.Shelter.Period)

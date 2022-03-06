@@ -104,18 +104,36 @@
 
     private Task<IEnumerable<BorderModel>> SearchBorder(string value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            return Task.FromResult(Cache.Borders);
+        }
+
         return Task.FromResult(
             Cache.Borders.Where(b => b.NormalizedName.Contains(value.LookupNormalize())));
     }
 
     private Task<IEnumerable<RegionModel>> SearchRegion(string value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            return Task.FromResult(Cache.Regions);
+        }
+
         return Task.FromResult(
             Cache.Regions.Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
     }
 
     private Task<IEnumerable<CityModel>> SearchCity(string value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            return Task.FromResult(Cache.Cities
+                .Where(c => c .RegionId == request.Address.Region.Id)
+                .OrderByDescending(c => c.Population)
+                .Take(15));
+        }
+
         return Task.FromResult(Cache.Cities
             .Where(c => c .RegionId == request.Address.Region.Id)
             .Where(r => r.NormalizedName.Contains(value.LookupNormalize())));
