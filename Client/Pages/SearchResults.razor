@@ -6,7 +6,7 @@
 
 <div class="mt-5">
     <MudTabs Elevation="0" Rounded="true" Border="true" ApplyEffectsToContainer="false" PanelClass="pt-4">
-        <MudTabPanel Text="Transport" Icon="@Icons.Filled.TimeToLeave" >
+        <MudTabPanel Text="Transport" Icon="@Icons.Filled.TimeToLeave">
             @foreach (var transport in Result.TransportResults.Where(t => t.IsActive))
             {
                 <MudCard Class="mb-6 pl-2 pb-2 pr-2">
@@ -33,7 +33,10 @@
                         <div class="mt-2">
                             <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline-block pb-1" />
                             <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
-                                <span class="fw-bold">@transport.AdultSeats adulți, @transport.ChildSeats copii</span>
+                                <span class="fw-bold">
+                                    @($"{transport.AdultSeats} {(transport.AdultSeats == 1 ? "adult" : "adulți")}"),
+                                    @($"{transport.ChildSeats} {(transport.ChildSeats == 1 ? "copil" : "copii")}")
+                                </span>
                             </MudText>
                         </div>
                         @if (transport.LeavesAt.HasValue)
@@ -59,9 +62,9 @@
                     <MudCardActions Class="d-flex justify-space-between">
                         <div>
                             @*<MudButton Variant="Variant.Filled" Color="Color.Success"
-                                   StartIcon="@Icons.Filled.Check" DisableElevation="true">
+                                StartIcon="@Icons.Filled.Check" DisableElevation="true">
                                 Rezolvat
-                            </MudButton>*@
+                                </MudButton>*@
                         </div>
                         <div>
                             <MudButton OnClick="@(() => DeactivateOffer(transport))" Variant="Variant.Text"
@@ -76,7 +79,7 @@
             <div hidden="@(Result.TransportResults.Count != 0)">
                 <MudText>
                     Nu am găsit rezultate.<br />
-                    Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
+                    Găsești mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
                 </MudText>
             </div>
         </MudTabPanel>
@@ -109,7 +112,10 @@
                             <div class="mt-2">
                                 <MudIcon Icon="@Icons.Filled.PeopleAlt" Size="Size.Medium" Class="d-inline-block pb-1" />
                                 <MudText Typo="Typo.body1" Class="d-inline-block ml-2">
-                                    <span class="fw-bold">@shelter.AdultCapacity adulți, @shelter.ChildrenCapacity copii </span>
+                                    <span class="fw-bold">
+                                        @($"{shelter.AdultCapacity} {(shelter.AdultCapacity == 1 ? "adult" : "adulți")}"),
+                                        @($"{shelter.ChildrenCapacity} {(shelter.ChildrenCapacity == 1 ? "copil" : "copii")}")
+                                    </span>
                                 </MudText>
                             </div>
                             <div class="mt-2">
@@ -122,9 +128,9 @@
                         <MudCardActions Class="d-flex justify-space-between">
                             <div>
                                 @*<MudButton Variant="Variant.Filled" Color="Color.Success"
-                                   StartIcon="@Icons.Filled.Check" DisableElevation="true">
+                                    StartIcon="@Icons.Filled.Check" DisableElevation="true">
                                     Rezolvat
-                                </MudButton>*@
+                                    </MudButton>*@
                             </div>
                             <div>
                                 <MudButton OnClick="@(() => DeactivateOffer(shelter))" Variant="Variant.Text"
@@ -139,7 +145,7 @@
                 <div hidden="@(Result.ShelterResults.Count != 0)">
                     <MudText>
                         Nu am găsit rezultate.<br />
-                        Încearcă să cauți mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
+                        Găsești mai multe oferte pe site-ul <MudLink Href="https://refugees.ro/" Target="_blank">refugees.ro</MudLink>.
                     </MudText>
                 </div>
             </MudTabPanel>
